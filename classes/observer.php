@@ -41,7 +41,9 @@ class enrol_mnet_remote_observer extends enrol_mnet_remote_handler {
             return true;
         }
 
-        self::sync_course_instances($event->courseid, $event->relateduserid);
+        //self::sync_course_instances($event->courseid, $event->relateduserid);
+        error_log('enrol_mnet_remote: user_enrolment_created called');
+        
         return true;
     }
 
@@ -57,7 +59,8 @@ class enrol_mnet_remote_observer extends enrol_mnet_remote_handler {
             return true;
         }
 
-        self::sync_course_instances($event->courseid, $event->relateduserid);
+        //self::sync_course_instances($event->courseid, $event->relateduserid);
+        error_log('enrol_mnet_remote: user_enrolment_deleted called');
 
         return true;
     }
@@ -73,7 +76,8 @@ class enrol_mnet_remote_observer extends enrol_mnet_remote_handler {
             // Ignore if the plugin is disabled.
             return true;
         }
-        self::sync_course_instances($event->courseid, $event->relateduserid);
+        //self::sync_course_instances($event->courseid, $event->relateduserid);
+        error_log('enrol_mnet_remote: user_enrolment_updated called');
 
         return true;
     }
@@ -85,7 +89,6 @@ class enrol_mnet_remote_observer extends enrol_mnet_remote_handler {
      * @return bool true on success
      */
     public static function course_deleted(\core\event\course_deleted $event) {
-        global $DB;
 
         if (!enrol_is_enabled('mnet_remote')) {
             // Ignore if the plugin is disabled.
@@ -95,6 +98,7 @@ class enrol_mnet_remote_observer extends enrol_mnet_remote_handler {
         /* Todo: unenrol all users in the deleted course on all instances of
          * the Remote MNet enrolment plugin.
          */
+        error_log('enrol_mnet_remote: course_deleted called');
 
         return true;
     }

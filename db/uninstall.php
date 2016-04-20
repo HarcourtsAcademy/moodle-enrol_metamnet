@@ -15,17 +15,27 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Meta link enrolment plugin version specification.
+ * Remote MNet enrolment plugin uninstallation.
  *
- * @package    enrol_mnet_remote
- * @copyright  2016 Harcourts International Limited {@link http://www.harcourtsacademy.com}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     enrol_mnet_remote
+ * @author      Tim Butler
+ * @copyright   2016 Harcourts International Limited {@link http://www.harcourtsacademy.com}
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2016042001;                // The current plugin version (Date: YYYYMMDDXX).
-$plugin->component = 'enrol_mnet_remote';       // Full name of the plugin (used for diagnostics).
-$plugin->release = '0.0 (Build: 2016042001)';
-$plugin->requires = 2014051200;                 // Requires Moodle 2.7+.
-$plugin->maturity = MATURITY_ALPHA;
+function xmldb_enrol_mnet_remote_uninstall() {
+    global $CFG, $DB;
+
+    $mr = enrol_get_plugin('mnet_remote');
+    $rs = $DB->get_recordset('enrol', array('enrol'=>'mnet_remote'));
+    foreach ($rs as $instance) {
+        $mr->delete_instance($instance);
+    }
+    $rs->close();
+
+    role_unassign_all(array('component'=>'enrol_mnet_remote'));
+
+    return true;
+}

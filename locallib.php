@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'enrol_mnet_remote', language 'en'.
+ * Local classes and functions for Remote MNet enrolment plugin.
  *
  * @package     enrol_mnet_remote
  * @author      Tim Butler
@@ -23,5 +23,26 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Remote MNet Enrolment';
-$string['pluginname_desc'] = 'Remote MNet Enrolment plugin synchronises enrolments across Moodle MNet hosts.';
+defined('MOODLE_INTERNAL') || die();
+
+
+/**
+ * Event handler for Remote MNet enrolment plugin.
+ *
+ * We try to keep everything in sync via listening to events,
+ * it may fail sometimes, so we always do a full sync in cron too.
+ */
+class enrol_mnet_remote_handler {
+
+    /**
+     * Synchronise Remote MNet enrolments of this user in this course
+     * @static
+     * @param int $courseid
+     * @param int $userid
+     * @return void
+     */
+    protected static function sync_course_instances($courseid, $userid) {
+        /* Todo: write sync_course_instances() function.
+         */
+    }
+}

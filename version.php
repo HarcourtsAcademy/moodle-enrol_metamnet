@@ -24,8 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2016042000;                // The current plugin version (Date: YYYYMMDDXX)
-$plugin->component = 'enrol_mnet_remote';       // Full name of the plugin (used for diagnostics)
+$plugin->version   = 2016042000;                // The current plugin version (Date: YYYYMMDDXX).
+$plugin->component = 'enrol_mnet_remote';       // Full name of the plugin (used for diagnostics).
 $plugin->release = '0.0 (Build: 2016042000)';
-$plugin->requires = 2014051200;                 // Requires Moodle 2.7+
+$plugin->requires = 2014051200;                 // Requires Moodle 2.7+.
 $plugin->maturity = MATURITY_ALPHA;

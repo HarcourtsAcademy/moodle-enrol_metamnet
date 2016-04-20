@@ -36,13 +36,15 @@ class enrol_mnet_remote_observer extends enrol_mnet_remote_handler {
      * @return bool true on success.
      */
     public static function user_enrolment_created(\core\event\user_enrolment_created $event) {
+        error_log('enrol_mnet_remote: user_enrolment_created called');
+        
         if (!enrol_is_enabled('mnet_remote')) {
             // Ignore if the plugin is disabled.
             return true;
         }
 
         //self::sync_course_instances($event->courseid, $event->relateduserid);
-        error_log('enrol_mnet_remote: user_enrolment_created called');
+        error_log('enrol_mnet_remote: user_enrolment_created reached');
         
         return true;
     }

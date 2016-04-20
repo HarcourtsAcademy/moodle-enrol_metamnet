@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Capabilities for Remote MNet enrolment plugin.
+ * Capabilities for Meta MNet enrolment plugin.
  *
- * @package     enrol_mnet_remote
+ * @package     enrol_metamnet
  * @athor       Tim Butler
  * @copyright   2016 Harcourts International Limited {@link http://www.harcourtsacademy.com}
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
-    'enrol/mnet_remote:config' => array(
+    'enrol/metamnet:config' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
         'archetypes' => array(

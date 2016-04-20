@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Remote MNet course enrolment plugin event handler definition.
+ * Meta MNet course enrolment plugin event handler definition.
  *
- * @package     enrol_mnet_remote
+ * @package     enrol_metamnet
  * @author      Tim Butler
  * @copyright   2016 Harcourts International Limited {@link http://www.harcourtsacademy.com}
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -30,18 +30,18 @@ $observers = array(
 
     array(
         'eventname'   => '\core\event\user_enrolment_created',
-        'callback'    => 'enrol_mnet_remote_observer::user_enrolment_created',
+        'callback'    => 'enrol_metamnet_observer::user_enrolment_created',
     ),
     array(
         'eventname'   => '\core\event\user_enrolment_deleted',
-        'callback'    => 'enrol_mnet_remote_observer::user_enrolment_deleted',
+        'callback'    => 'enrol_metamnet_observer::user_enrolment_deleted',
     ),
     array(
         'eventname'   => '\core\event\user_enrolment_updated',
-        'callback'    => 'enrol_mnet_remote_observer::user_enrolment_updated',
+        'callback'    => 'enrol_metamnet_observer::user_enrolment_updated',
     ),
     array(
         'eventname'   => '\core\event\course_deleted',
-        'callback'    => 'enrol_mnet_remote_observer::course_deleted',
+        'callback'    => 'enrol_metamnet_observer::course_deleted',
     ),
 );

@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Event observer for Remote MNet enrolment plugin.
+ * Event observer for Meta MNet enrolment plugin.
  *
- * @package     enrol_mnet_remote
+ * @package     enrol_metamnet
  * @author      Tim Butler
  * @copyright   2016 Harcourts International Limited {@link http://www.harcourtsacademy.com}
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -25,9 +25,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/enrol/mnet_remote/locallib.php');
+require_once($CFG->dirroot.'/enrol/metamnet/locallib.php');
 
-class enrol_mnet_remote_observer extends enrol_mnet_remote_handler {
+class enrol_metamnet_observer extends enrol_metamnet_handler {
 
     /**
      * Triggered via user_enrolment_created event.
@@ -36,15 +36,15 @@ class enrol_mnet_remote_observer extends enrol_mnet_remote_handler {
      * @return bool true on success.
      */
     public static function user_enrolment_created(\core\event\user_enrolment_created $event) {
-        error_log('enrol_mnet_remote: user_enrolment_created called');
+        error_log('enrol_metamnet: user_enrolment_created called');
         
-        if (!enrol_is_enabled('mnet_remote')) {
+        if (!enrol_is_enabled('metamnet')) {
             // Ignore if the plugin is disabled.
             return true;
         }
 
         //self::sync_course_instances($event->courseid, $event->relateduserid);
-        error_log('enrol_mnet_remote: user_enrolment_created reached');
+        error_log('enrol_metamnet: user_enrolment_created reached');
         
         return true;
     }
@@ -56,13 +56,13 @@ class enrol_mnet_remote_observer extends enrol_mnet_remote_handler {
      * @return bool true on success.
      */
     public static function user_enrolment_deleted(\core\event\user_enrolment_deleted $event) {
-        if (!enrol_is_enabled('mnet_remote')) {
+        if (!enrol_is_enabled('metamnet')) {
             // Ignore if the plugin is disabled.
             return true;
         }
 
         //self::sync_course_instances($event->courseid, $event->relateduserid);
-        error_log('enrol_mnet_remote: user_enrolment_deleted called');
+        error_log('enrol_metamnet: user_enrolment_deleted called');
 
         return true;
     }
@@ -74,12 +74,12 @@ class enrol_mnet_remote_observer extends enrol_mnet_remote_handler {
      * @return bool true on success
      */
     public static function user_enrolment_updated(\core\event\user_enrolment_updated $event) {
-        if (!enrol_is_enabled('mnet_remote')) {
+        if (!enrol_is_enabled('metamnet')) {
             // Ignore if the plugin is disabled.
             return true;
         }
         //self::sync_course_instances($event->courseid, $event->relateduserid);
-        error_log('enrol_mnet_remote: user_enrolment_updated called');
+        error_log('enrol_metamnet: user_enrolment_updated called');
 
         return true;
     }
@@ -92,15 +92,15 @@ class enrol_mnet_remote_observer extends enrol_mnet_remote_handler {
      */
     public static function course_deleted(\core\event\course_deleted $event) {
 
-        if (!enrol_is_enabled('mnet_remote')) {
+        if (!enrol_is_enabled('metamnet')) {
             // Ignore if the plugin is disabled.
             return true;
         }
 
         /* Todo: unenrol all users in the deleted course on all instances of
-         * the Remote MNet enrolment plugin.
+         * the Meta MNet enrolment plugin.
          */
-        error_log('enrol_mnet_remote: course_deleted called');
+        error_log('enrol_metamnet: course_deleted called');
 
         return true;
     }

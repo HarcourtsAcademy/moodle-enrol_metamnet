@@ -15,17 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Adds new instance of enrol_mnet_remote to specified course.
+ * Adds new instance of enrol_metamnet to specified course.
  *
- * @package     enrol_mnet_remote
+ * @package     enrol_metamnet
  * @author      Tim Butler
  * @copyright   2016 Harcourts International Limited {@link http://www.harcourtsacademy.com}
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require('../../config.php');
-require_once("$CFG->dirroot/enrol/mnet_remote/addinstance_form.php");
-require_once("$CFG->dirroot/enrol/mnet_remote/locallib.php");
+require_once("$CFG->dirroot/enrol/metamnet/addinstance_form.php");
+require_once("$CFG->dirroot/enrol/metamnet/locallib.php");
 
 $id = required_param('id', PARAM_INT); // course id
 $message = optional_param('message', null, PARAM_TEXT);
@@ -34,7 +34,7 @@ $instanceid = optional_param('enrolid', 0, PARAM_INT);
 $course = $DB->get_record('course', array('id'=>$id), '*', MUST_EXIST);
 $context = context_course::instance($course->id, MUST_EXIST);
 
-$PAGE->set_url('/enrol/mnet_remote/addinstance.php', array('id'=>$course->id));
+$PAGE->set_url('/enrol/metamnet/addinstance.php', array('id'=>$course->id));
 $PAGE->set_pagelayout('admin');
 
 navigation_node::override_active_url(new moodle_url('/enrol/instances.php', array('id'=>$course->id)));
@@ -42,10 +42,10 @@ navigation_node::override_active_url(new moodle_url('/enrol/instances.php', arra
 require_login($course);
 require_capability('moodle/course:enrolconfig', $context);
 
-$enrol = enrol_get_plugin('mnet_remote');
+$enrol = enrol_get_plugin('metamnet');
 if ($instanceid) {
-    require_capability('enrol/mnet_remote:config', $context);
-    $instance = $DB->get_record('enrol', array('courseid' => $course->id, 'enrol' => 'mnet_remote',
+    require_capability('enrol/metamnet:config', $context);
+    $instance = $DB->get_record('enrol', array('courseid' => $course->id, 'enrol' => 'metamnet',
         'id' => $instanceid), '*', MUST_EXIST);
 
 } else {
@@ -55,7 +55,7 @@ if ($instanceid) {
     $instance = null;
 }
 
-$mform = new enrol_mnet_remote_addinstance_form(null, array('course' => $course, 'instance' => $instance));
+$mform = new enrol_metamnet_addinstance_form(null, array('course' => $course, 'instance' => $instance));
 
 if ($mform->is_cancelled()) {
     redirect(new moodle_url('/enrol/instances.php', array('id'=>$course->id)));
@@ -84,7 +84,7 @@ if ($mform->is_cancelled()) {
 }
 
 $PAGE->set_heading($course->fullname);
-$PAGE->set_title(get_string('pluginname', 'enrol_mnet_remote'));
+$PAGE->set_title(get_string('pluginname', 'enrol_metamnet'));
 
 echo $OUTPUT->header();
 

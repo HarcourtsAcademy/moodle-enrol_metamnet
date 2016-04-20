@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Remote MNet add instance form
+ * Meta MNet add instance form
  *
- * @package     enrol_mnet_remote
+ * @package     enrol_metamnet
  * @author      Tim Butler
  * @copyright   2016 Harcourts International Limited {@link http://www.harcourtsacademy.com}
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->libdir/formslib.php");
 
-class enrol_mnet_remote_addinstance_form extends moodleform {
+class enrol_metamnet_addinstance_form extends moodleform {
     protected $course;
 
     function definition() {
@@ -45,7 +45,7 @@ class enrol_mnet_remote_addinstance_form extends moodleform {
         } else {
             $where = '';
             $params = array();
-            $existing = $DB->get_records('enrol', array('enrol' => 'mnet_remote', 'courseid' => $course->id), '', 'customint1, id');
+            $existing = $DB->get_records('enrol', array('enrol' => 'metamnet', 'courseid' => $course->id), '', 'customint1, id');
         }
 
         /*        

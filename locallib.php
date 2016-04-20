@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Local classes and functions for Remote MNet enrolment plugin.
+ * Local classes and functions for Meta MNet enrolment plugin.
  *
- * @package     enrol_mnet_remote
+ * @package     enrol_metamnet
  * @author      Tim Butler
  * @copyright   2016 Harcourts International Limited {@link http://www.harcourtsacademy.com}
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -27,15 +27,15 @@ defined('MOODLE_INTERNAL') || die();
 
 
 /**
- * Event handler for Remote MNet enrolment plugin.
+ * Event handler for Meta MNet enrolment plugin.
  *
  * We try to keep everything in sync via listening to events,
  * it may fail sometimes, so we always do a full sync in cron too.
  */
-class enrol_mnet_remote_handler {
+class enrol_metamnet_handler {
 
     /**
-     * Synchronise Remote MNet enrolments of this user in this course
+     * Synchronise Meta MNet enrolments of this user in this course
      * @static
      * @param int $courseid
      * @param int $userid

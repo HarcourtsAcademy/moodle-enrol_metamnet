@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Remote MNet enrolment plugin uninstallation.
+ * Meta MNet enrolment plugin uninstallation.
  *
- * @package     enrol_mnet_remote
+ * @package     enrol_metamnet
  * @author      Tim Butler
  * @copyright   2016 Harcourts International Limited {@link http://www.harcourtsacademy.com}
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -25,17 +25,17 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-function xmldb_enrol_mnet_remote_uninstall() {
+function xmldb_enrol_metamnet_uninstall() {
     global $CFG, $DB;
 
-    $mr = enrol_get_plugin('mnet_remote');
-    $rs = $DB->get_recordset('enrol', array('enrol'=>'mnet_remote'));
+    $mr = enrol_get_plugin('metamnet');
+    $rs = $DB->get_recordset('enrol', array('enrol'=>'metamnet'));
     foreach ($rs as $instance) {
         $mr->delete_instance($instance);
     }
     $rs->close();
 
-    role_unassign_all(array('component'=>'enrol_mnet_remote'));
+    role_unassign_all(array('component'=>'enrol_metamnet'));
 
     return true;
 }

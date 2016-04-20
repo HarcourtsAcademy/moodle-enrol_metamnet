@@ -1,1 +1,1 @@
-# moodle-enrol_mnet_remote
+# moodle-enrol_metamnet

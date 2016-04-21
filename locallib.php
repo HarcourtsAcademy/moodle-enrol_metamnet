@@ -44,5 +44,11 @@ class enrol_metamnet_handler {
     protected static function sync_course_instances($courseid, $userid) {
         /* Todo: write sync_course_instances() function.
          */
+        
+        
+
+        // Get the host and remote course from the mnetservice_enrol_courses table
+        
+        
     }
 }

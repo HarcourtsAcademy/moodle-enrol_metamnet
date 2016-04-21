@@ -26,12 +26,13 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->libdir/formslib.php");
+require_once($CFG->dirroot.'/mnet/service/enrol/locallib.php');
 
 class enrol_metamnet_addinstance_form extends moodleform {
     protected $course;
 
     function definition() {
-        global $CFG, $DB;
+        global $CFG, $DB, $OUTPUT;
 
         $mform  = $this->_form;
         $course = $this->_customdata['course'];
@@ -48,6 +49,43 @@ class enrol_metamnet_addinstance_form extends moodleform {
             $existing = $DB->get_records('enrol', array('enrol' => 'metamnet', 'courseid' => $course->id), '', 'customint1, id');
         }
 
+        $mform->addElement('header','general', get_string('pluginname', 'enrol_meta'));
+
+        $service = mnetservice_enrol::get_instance();
+
+        if (!$service->is_available()) {
+            $mform->addElement('html', $OUTPUT->box(get_string('mnetdisabled','mnet'), 'noticebox'));
+            return;
+        }
+
+        $roamingusers = get_users_by_capability(context_system::instance(), 'moodle/site:mnetlogintoremote', 'u.id');
+        if (empty($roamingusers)) {
+            $capname = get_string('site:mnetlogintoremote', 'role');
+            $url = new moodle_url('/admin/roles/manage.php');
+            $mform->addElement('html', notice(get_string('noroamingusers', 'mnetservice_enrol', $capname), $url));
+        }
+        unset($roamingusers);
+
+        // remote hosts that may publish remote enrolment service and we are subscribed to it
+        $hosts = $service->get_remote_publishers();
+
+        if (empty($hosts)) {
+            $mform->addElement('html', $OUTPUT->box(get_string('nopublishers', 'mnetservice_enrol'), 'noticebox'));
+            return;
+        }
+
+        foreach ($hosts as $host) {
+            $hostlink = html_writer::link(new moodle_url($host->hosturl), s($host->hosturl));
+            $mform->addElement('html', '<h3>' . s($host->hostname) . '</h3>');
+            $mform->addElement('html', $hostlink);
+        
+            $mform->addElement('radio', 'scope', s($host->hostname), null, 'custom');
+            
+        }
+        
+       
+       
+        
         /*        
         // TODO: this has to be done via ajax or else it will fail very badly on large sites!
         $courses = array('' => get_string('choosedots'));
@@ -82,11 +120,6 @@ class enrol_metamnet_addinstance_form extends moodleform {
         foreach (groups_get_all_groups($course->id) as $group) {
             $groups[$group->id] = format_string($group->name, true, array('context' => context_course::instance($course->id)));
         }
-        */
-
-        $mform->addElement('header','general', get_string('pluginname', 'enrol_meta'));
-        
-        /*
 
         $mform->addElement('select', 'link', get_string('linkedcourse', 'enrol_meta'), $courses);
         $mform->addRule('link', get_string('required'), 'required', null, 'client');
@@ -98,19 +131,20 @@ class enrol_metamnet_addinstance_form extends moodleform {
 
         $mform->addElement('hidden', 'enrolid');
         $mform->setType('enrolid', PARAM_INT);
+         */
+
 
         $data = array('id' => $course->id);
+
         if ($instance) {
-            $data['link'] = $instance->customint1;
+            $data['customint1'] = $instance->customint1;
             $data['enrolid'] = $instance->id;
-            $data['customint2'] = $instance->customint2;
             $mform->freeze('link');
             $this->add_action_buttons();
         } else {
             $this->add_add_buttons();
         }
         $this->set_data($data);
-         */
     }
 
     /**
@@ -120,8 +154,7 @@ class enrol_metamnet_addinstance_form extends moodleform {
         $mform = $this->_form;
         $buttonarray = array();
         $buttonarray[0] = $mform->createElement('submit', 'submitbutton', get_string('addinstance', 'enrol'));
-        $buttonarray[1] = $mform->createElement('submit', 'submitbuttonnext', get_string('addinstanceanother', 'enrol'));
-        $buttonarray[2] = $mform->createElement('cancel');
+        $buttonarray[1] = $mform->createElement('cancel');
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
         $mform->closeHeaderBefore('buttonar');
     }
@@ -136,21 +169,7 @@ class enrol_metamnet_addinstance_form extends moodleform {
             return $errors;
         }
 
-        // TODO: this is duplicated here because it may be necessary once we implement ajax course selection element
-
-        if (!$c = $DB->get_record('course', array('id'=>$data['link']))) {
-            $errors['link'] = get_string('required');
-        } else {
-            $coursecontext = context_course::instance($c->id);
-            $existing = $DB->get_records('enrol', array('enrol'=>'meta', 'courseid'=>$this->course->id), '', 'customint1, id');
-            if (!$c->visible and !has_capability('moodle/course:viewhiddencourses', $coursecontext)) {
-                $errors['link'] = get_string('error');
-            } else if (!has_capability('enrol/meta:selectaslinked', $coursecontext)) {
-                $errors['link'] = get_string('error');
-            } else if ($c->id == SITEID or $c->id == $this->course->id or isset($existing[$c->id])) {
-                $errors['link'] = get_string('error');
-            }
-        }
+        // todo: write add instance validation.
 
         return $errors;
     }

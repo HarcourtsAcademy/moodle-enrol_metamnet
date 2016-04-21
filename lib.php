@@ -288,4 +288,18 @@ class enrol_metamnet_plugin extends enrol_plugin {
 
         return $icons;
     }
+    
+    /**
+     * Forces synchronisation of user enrolments.
+     *
+     * This is important especially for external enrol plugins,
+     * this function is called for all enabled enrol plugins
+     * right after every user login.
+     *
+     * @param object $user user record
+     * @return void
+     */
+    public function sync_user_enrolments($user) {
+        // todo: write this function.
+    }
 }

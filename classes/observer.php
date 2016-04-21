@@ -43,7 +43,7 @@ class enrol_metamnet_observer extends enrol_metamnet_handler {
             return true;
         }
 
-        //self::sync_course_instances($event->courseid, $event->relateduserid);
+        self::sync_course_instances($event->courseid, $event->relateduserid);
         error_log('enrol_metamnet: user_enrolment_created reached');
         
         return true;

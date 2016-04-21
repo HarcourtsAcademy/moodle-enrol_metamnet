@@ -41,17 +41,12 @@ class enrol_metamnet_plugin extends enrol_plugin {
             return get_string('pluginname', 'enrol_'.$enrol);
         } else if (empty($instance->name)) {
             $enrol = $this->get_name();
-            /* todo: replace with code to include remote host and course.
-            $course = $DB->get_record('course', array('id'=>$instance->customint1));
-            if ($course) {
-                $coursename = format_string(get_course_display_name_for_list($course));
-            } else {
-                // Use course id, if course is deleted.
-                $coursename = $instance->customint1;
+            $mnetcourse = $DB->get_record('mnetservice_enrol_courses', array('id'=>$instance->customint1));
+            if ($mnetcourse) {
+                $coursename = format_string($mnetcourse->fullname);
+                return get_string('pluginname', 'enrol_' . $enrol) . ' (' . $coursename . ')';
             }
-            return get_string('pluginname', 'enrol_' . $enrol) . ' (' . $coursename . ')';
-             */
-            return get_string('pluginname', 'enrol_'.$enrol); // todo: remote this line.
+            return get_string('pluginname', 'enrol_'.$enrol);
         } else {
             return format_string($instance->name);
         }

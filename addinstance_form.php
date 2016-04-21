@@ -95,6 +95,8 @@ class enrol_metamnet_addinstance_form extends moodleform {
             }
             
         }
+        
+        $mform->addRule('customtint1', get_string('required'), 'required', null, 'client');
 
         $mform->addElement('html', '<a href="' . new moodle_url($PAGE->url, array('usecache'=>0, 'sesskey'=>sesskey())) . '" class="btn">' . 
                 get_string('refetch', 'mnetservice_enrol') . '</a>');
@@ -115,13 +117,11 @@ class enrol_metamnet_addinstance_form extends moodleform {
     }
 
     function validation($data, $files) {
-        global $DB, $CFG;
 
         $errors = parent::validation($data, $files);
-
-        if ($this->_customdata['instance']) {
-            // Nothing to validate in case of editing.
-            return $errors;
+        
+        if (empty($data['customint1'])) {
+            $errors['customtint1'] = "Please select a course."; // todo: Convert to language string
         }
 
         // todo: write add instance validation.

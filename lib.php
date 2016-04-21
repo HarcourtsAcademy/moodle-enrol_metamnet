@@ -40,8 +40,8 @@ class enrol_metamnet_plugin extends enrol_plugin {
             $enrol = $this->get_name();
             return get_string('pluginname', 'enrol_'.$enrol);
         } else if (empty($instance->name)) {
-            /* todo: replace with code to include remote host and course.
             $enrol = $this->get_name();
+            /* todo: replace with code to include remote host and course.
             $course = $DB->get_record('course', array('id'=>$instance->customint1));
             if ($course) {
                 $coursename = format_string(get_course_display_name_for_list($course));
@@ -68,7 +68,7 @@ class enrol_metamnet_plugin extends enrol_plugin {
             return NULL;
         }
         // multiple instances supported - multiple remote courses linked
-        return new moodle_url('/enrol/metamnet/addinstance.php', array('id'=>$courseid));
+        return new moodle_url('/enrol/metamnet/addinstance.php', array('courseid'=>$courseid));
     }
 
     /**

@@ -27,14 +27,14 @@ require('../../config.php');
 require_once("$CFG->dirroot/enrol/metamnet/addinstance_form.php");
 require_once("$CFG->dirroot/enrol/metamnet/locallib.php");
 
-$id = required_param('id', PARAM_INT); // course id
+$courseid = required_param('courseid', PARAM_INT); // course id
 $message = optional_param('message', null, PARAM_TEXT);
 $instanceid = optional_param('enrolid', 0, PARAM_INT);
 
-$course = $DB->get_record('course', array('id'=>$id), '*', MUST_EXIST);
+$course = $DB->get_record('course', array('id'=>$courseid), '*', MUST_EXIST);
 $context = context_course::instance($course->id, MUST_EXIST);
 
-$PAGE->set_url('/enrol/metamnet/addinstance.php', array('id'=>$course->id));
+$PAGE->set_url('/enrol/metamnet/addinstance.php', array('courseid'=>$course->id));
 $PAGE->set_pagelayout('admin');
 
 navigation_node::override_active_url(new moodle_url('/enrol/instances.php', array('id'=>$course->id)));
@@ -67,12 +67,8 @@ if ($mform->is_cancelled()) {
             // todo: start a course sync here e.g. enrol_meta_sync($course->id);
         }
     } else {
-        $eid = $enrol->add_instance($course, array('customint1' => $data->customint1));
+        $enrol->add_instance($course, array('customint1' => $data->customint1));
         // todo: start a course sync here e.g. enrol_meta_sync($course->id);
-        if (!empty($data->submitbuttonnext)) {
-            redirect(new moodle_url('/enrol/metamnet/addinstance.php',
-                    array('id' => $course->id, 'message' => 'added')));
-        }
     }
     redirect(new moodle_url('/enrol/instances.php', array('id' => $course->id)));
 }

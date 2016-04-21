@@ -45,16 +45,6 @@ class enrol_metamnet_addinstance_form extends moodleform {
             require_sesskey();
         }
 
-        if ($instance) {
-            $where = 'WHERE c.id = :courseid';
-            $params = array('courseid' => $instance->customint1);
-            $existing = array();
-        } else {
-            $where = '';
-            $params = array();
-            $existing = $DB->get_records('enrol', array('enrol' => 'metamnet', 'courseid' => $course->id), '', 'customint1, id');
-        }
-
         $mform->addElement('header','general', get_string('pluginname', 'enrol_meta'));
 
         $service = mnetservice_enrol::get_instance();
@@ -101,7 +91,7 @@ class enrol_metamnet_addinstance_form extends moodleform {
                     $mform->addElement('html', '<h4>' . $icon . s($course->categoryname) . '</h4>');
                     $prevcat = $course->categoryid;
                 }
-                $mform->addElement('radio', 'cusomtint1', s($course->fullname) . ' (' . s($course->rolename) . ')', null, $course->id);
+                $mform->addElement('radio', 'customtint1', s($course->fullname) . ' (' . s($course->rolename) . ')', null, $course->id);
             }
             
         }
@@ -110,24 +100,18 @@ class enrol_metamnet_addinstance_form extends moodleform {
                 get_string('refetch', 'mnetservice_enrol') . '</a>');
 
         
-        $mform->addElement('hidden', 'id', null);
+        $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
-
-        $mform->addElement('hidden', 'enrolid');
-        $mform->setType('enrolid', PARAM_INT);
-
-        $data = array('id' => $course->id);
+        $mform->addElement('hidden', 'courseid', $this->course->id);
+        $mform->setType('courseid', PARAM_INT);
 
         $submit = get_string('addinstance', 'enrol');
         if ($instance) {
-            $data['customint1'] = $instance->customint1;
-            $data['enrolid'] = $instance->id;
             $submit = null;
         }
-
-        //$mform->add_action_buttons();
+        
         $this->add_action_buttons(true, $submit);
-        $this->set_data($data);
+        $this->set_data($instance);
     }
 
     function validation($data, $files) {

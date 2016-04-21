@@ -104,24 +104,17 @@ class enrol_metamnet_addinstance_form extends moodleform {
                 $mform->addElement('radio', 'cusomtint1', s($course->fullname) . ' (' . s($course->rolename) . ')', null, $course->id);
             }
             
-            $mform->addElement('html', $OUTPUT->single_button(new moodle_url($PAGE->url, array('usecache'=>0, 'sesskey'=>sesskey())),
-                    get_string('refetch', 'mnetservice_enrol'), 'get'));
         }
+
+        $mform->addElement('html', '<a href="' . new moodle_url($PAGE->url, array('usecache'=>0, 'sesskey'=>sesskey())) . '" class="btn">' . 
+                get_string('refetch', 'mnetservice_enrol') . '</a>');
+
         
-        /*
-        $mform->addElement('select', 'link', get_string('linkedcourse', 'enrol_meta'), $courses);
-        $mform->addRule('link', get_string('required'), 'required', null, 'client');
-
-        $mform->addElement('select', 'customint2', get_string('addgroup', 'enrol_meta'), $groups);
-
         $mform->addElement('hidden', 'id', null);
         $mform->setType('id', PARAM_INT);
 
         $mform->addElement('hidden', 'enrolid');
         $mform->setType('enrolid', PARAM_INT);
-         */
-
-        error_log("here45");
 
         $data = array('id' => $course->id);
 

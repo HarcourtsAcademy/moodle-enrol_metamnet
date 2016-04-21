@@ -276,7 +276,7 @@ class enrol_metamnet_plugin extends enrol_plugin {
 
         if (has_capability('enrol/metamnet:config', $context)) {
             $editlink = new moodle_url("/enrol/metamnet/addinstance.php",
-                array('id' => $instance->courseid, 'enrolid' => $instance->id));
+                array('courseid' => $instance->courseid, 'enrolid' => $instance->id));
             $icons[] = $OUTPUT->action_icon($editlink, new pix_icon('t/edit', get_string('edit'), 'core',
                 array('class' => 'iconsmall')));
         }

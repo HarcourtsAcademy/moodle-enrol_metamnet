@@ -29,7 +29,7 @@ require_once("$CFG->dirroot/enrol/metamnet/locallib.php");
 
 $courseid = required_param('courseid', PARAM_INT); // course id
 $message = optional_param('message', null, PARAM_TEXT);
-$instanceid = optional_param('id', 0, PARAM_INT);
+$instanceid = optional_param('enrolid', 0, PARAM_INT);
 
 $course = $DB->get_record('course', array('id'=>$courseid), '*', MUST_EXIST);
 $context = context_course::instance($course->id, MUST_EXIST);

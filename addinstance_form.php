@@ -79,7 +79,27 @@ class enrol_metamnet_addinstance_form extends moodleform {
             $mform->addElement('html', '<h3>' . s($host->hostname) . '</h3>');
             $mform->addElement('html', $hostlink);
         
-            $mform->addElement('radio', 'scope', s($host->hostname), null, 'custom');
+            $courses = $service->get_remote_courses($host->id);
+            if (is_string($courses)) {
+                $mform->addElement('html', $service->format_error_message($courses));
+            }
+            
+            if (empty($courses)) {
+                $a = (object)array('hostname' => s($host->hostname), 'hosturl' => s($host->hosturl));
+                $mform->addElement('html', $OUTPUT->box(get_string('availablecoursesonnone','mnetservice_enrol', $a), 'noticebox'));
+                return;
+            }
+
+            $icon = html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('i/course'), 'alt' => get_string('category')));
+            $prevcat = null;
+            foreach ($courses as $course) {
+                $course = (object)$course;
+                if ($prevcat !== $course->categoryid) {
+                    $mform->addElement('html', '<h4>' . $icon . s($course->categoryname) . '</h4>');
+                    $prevcat = $course->categoryid;
+                }
+                $mform->addElement('radio', 'course', s($course->fullname) . ' (' . s($course->rolename) . ')', null, 'custom');
+            }
             
         }
         

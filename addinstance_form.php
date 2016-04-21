@@ -91,16 +91,15 @@ class enrol_metamnet_addinstance_form extends moodleform {
                     $mform->addElement('html', '<h4>' . $icon . s($course->categoryname) . '</h4>');
                     $prevcat = $course->categoryid;
                 }
-                $mform->addElement('radio', 'customtint1', s($course->fullname) . ' (' . s($course->rolename) . ')', null, $course->id);
+                $mform->addElement('radio', 'customint1', s($course->fullname) . ' (' . s($course->rolename) . ')', null, $course->id);
             }
             
         }
         
-        $mform->addRule('customtint1', get_string('required'), 'required', null, 'client');
-
         $mform->addElement('html', '<a href="' . new moodle_url($PAGE->url, array('usecache'=>0, 'sesskey'=>sesskey())) . '" class="btn">' . 
                 get_string('refetch', 'mnetservice_enrol') . '</a>');
-
+        
+        $mform->addElement('static', 'errors', '', '');
         
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
@@ -117,11 +116,11 @@ class enrol_metamnet_addinstance_form extends moodleform {
     }
 
     function validation($data, $files) {
-
+        
         $errors = parent::validation($data, $files);
         
-        if (empty($data['customint1'])) {
-            $errors['customtint1'] = "Please select a course."; // todo: Convert to language string
+        if (!isset($data['customint1'])) {
+            $errors['errors'] = "Please select a course."; // todo: Convert to language string
         }
 
         // todo: write add instance validation.

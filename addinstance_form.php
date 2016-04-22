@@ -69,7 +69,10 @@ class enrol_metamnet_addinstance_form extends moodleform {
             $mform->addElement('html', $OUTPUT->box(get_string('nopublishers', 'mnetservice_enrol'), 'noticebox'));
             return;
         }
-
+        
+        // get existing meta mnet enrollments to prevent duplicates
+        $existing = $DB->get_fieldset_select('enrol', 'customint1', 'enrol = "metamnet"');
+        
         foreach ($hosts as $host) {
             $mform->addElement('html', '<h3><a href="' . $host->hosturl . '">' . s($host->hostname) . '</a></h3>');
         
@@ -91,10 +94,16 @@ class enrol_metamnet_addinstance_form extends moodleform {
                     $mform->addElement('html', '<h4>' . $icon . s($course->categoryname) . '</h4>');
                     $prevcat = $course->categoryid;
                 }
-                $mform->addElement('radio', 'customint1', s($course->fullname) . ' (' . s($course->rolename) . ')', null, $course->id);
+                if (in_array($course->id, $existing) && $course->id != $instance->customint1) {
+                    $mform->addElement('radio', 'disabled', s($course->fullname) . ' (' . s($course->rolename) . ')', null, $course->id);
+                } else {
+                    $mform->addElement('radio', 'customint1', s($course->fullname) . ' (' . s($course->rolename) . ')', null, $course->id);
+                }
             }
             
         }
+        
+        $mform->freeze('disabled');
         
         $mform->addElement('html', '<a href="' . new moodle_url($PAGE->url, array('usecache'=>0, 'sesskey'=>sesskey())) . '" class="btn">' . 
                 get_string('refetch', 'mnetservice_enrol') . '</a>');
@@ -122,6 +131,8 @@ class enrol_metamnet_addinstance_form extends moodleform {
         if (!isset($data['customint1'])) {
             $errors['errors'] = "Please select a course."; // todo: Convert to language string
         }
+        
+        
 
         // todo: write add instance validation.
 

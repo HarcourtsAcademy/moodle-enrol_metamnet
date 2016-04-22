@@ -25,3 +25,4 @@
 
 $string['pluginname'] = 'Meta MNet Enrolment';
 $string['pluginname_desc'] = 'Meta MNet Enrolment plugin synchronises enrolments across Moodle MNet hosts.';
+$string['inuse'] = '(In use)';

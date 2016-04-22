@@ -94,9 +94,9 @@ class enrol_metamnet_addinstance_form extends moodleform {
                     $mform->addElement('html', '<h4>' . $icon . s($course->categoryname) . '</h4>');
                     $prevcat = $course->categoryid;
                 }
-                if (in_array($course->id, $existing) && $instance && $course->id != $instance->customint1) {
-                    $mform->addElement('radio', 'disabled', s($course->fullname) . ' (' . s($course->rolename) . ')', null, $course->id);
-                    $mform->freeze('disabled');
+                if ((!$instance && in_array($course->id, $existing)) || ($instance && in_array($course->id, $existing) && $course->id != $instance->customint1)) {
+                    $mform->addElement('radio', 'disabled' . $course->id, s($course->fullname) . ' (' . s($course->rolename) . ')', get_string('inuse','enrol_metamnet'), $course->id);
+                    $mform->freeze('disabled' . $course->id);
                 } else {
                     $mform->addElement('radio', 'customint1', s($course->fullname) . ' (' . s($course->rolename) . ')', null, $course->id);
                 }

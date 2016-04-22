@@ -57,6 +57,9 @@ if ($instanceid) {
 
 $mform = new enrol_metamnet_addinstance_form(null, array('course' => $course, 'instance' => $instance));
 
+// get existing meta mnet enrollments to prevent duplicates
+$existing = $DB->get_fieldset_select('enrol', 'customint1', 'enrol = "metamnet"');
+
 if ($mform->is_cancelled()) {
     redirect(new moodle_url('/enrol/instances.php', array('id'=>$course->id)));
 
@@ -66,7 +69,7 @@ if ($mform->is_cancelled()) {
             $DB->update_record('enrol', array('id' => $instance->id, 'customint1' => $data->customint1));
             // todo: start a course sync here e.g. enrol_meta_sync($course->id);
         }
-    } else {
+    } else if (!in_array($data->id, $existing)) {
         $enrol->add_instance($course, array('customint1' => $data->customint1));
         // todo: start a course sync here e.g. enrol_meta_sync($course->id);
     }

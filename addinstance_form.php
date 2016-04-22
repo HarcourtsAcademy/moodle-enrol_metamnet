@@ -94,7 +94,7 @@ class enrol_metamnet_addinstance_form extends moodleform {
                     $mform->addElement('html', '<h4>' . $icon . s($course->categoryname) . '</h4>');
                     $prevcat = $course->categoryid;
                 }
-                if (in_array($course->id, $existing) && isset($instance) && $course->id != $instance->customint1) {
+                if (in_array($course->id, $existing) && $instance && $course->id != $instance->customint1) {
                     $mform->addElement('radio', 'disabled', s($course->fullname) . ' (' . s($course->rolename) . ')', null, $course->id);
                     $mform->freeze('disabled');
                 } else {
@@ -109,8 +109,10 @@ class enrol_metamnet_addinstance_form extends moodleform {
         
         $mform->addElement('static', 'errors', '', '');
         
-        $mform->addElement('hidden', 'id');
-        $mform->setType('id', PARAM_INT);
+        $enrolid = $instance ? $instance->id : null;
+        
+        $mform->addElement('hidden', 'enrolid', $enrolid);
+        $mform->setType('enrolid', PARAM_INT);
         $mform->addElement('hidden', 'courseid', $this->course->id);
         $mform->setType('courseid', PARAM_INT);
 

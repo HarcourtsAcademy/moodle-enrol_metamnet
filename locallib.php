@@ -164,13 +164,28 @@ function get_enrolment_instances($courseid) {
 }
 
 /**
+ * Get a remote MNet course
+ *
+ * @param int $hostid the MNet host id
+ * @param int $courseid the MNet course id
+ * @return stdClass|null the remote course
+ */
+function get_remote_course($hostid, $courseid) {
+    global $DB;
+    
+    return $DB->get_record('mnetservice_enrol_courses', array('remoteid'=>$courseid, 'hostid'=>$hostid), '*', MUST_EXIST);
+}
+
+/**
  * Get the remote host and course ids
  *
  * @param int $mnetcourseid of the remote course in the mnetservice_enrol_courses table
  * @return int[]|null array containing the remote host and course ids
  */
-function get_remote_host_and_course($mnetcourseid) {
+function get_remote_host_and_course_ids($mnetcourseid) {
     global $DB;
+    
+    return $DB->get_record('mnetservice_enrol_courses', array('id'=>$mnetcourseid),'hostid,remoteid', MUST_EXIST);
 }
 
 /**
@@ -206,7 +221,13 @@ function get_user_enrolments_from_ids($userid, $enrolmentinstanceids) {
 function remote_enrol($userids, $mnetcourseid) {
     error_log('Remote enrolling $userids from ' . $mnetcourseid . ': ' . print_r($userids, true));
     
+    $mnetserviceenrolcourses = get_remote_host_and_course_ids($mnetcourseid);
+    error_log('$mnetserviceenrolcourses: ' . print_r($mnetserviceenrolcourses, true));
     
+    $remotecourse = get_remote_course($mnetserviceenrolcourses->hostid,
+                                      $mnetserviceenrolcourses->remoteid);
+    
+    error_log('$remotecourse: ' . print_r($remotecourse, true));
 }
 
 /**
@@ -218,4 +239,13 @@ function remote_enrol($userids, $mnetcourseid) {
  */
 function remote_unenrol($userids, $mnetcourseid) {
     error_log('Remote un-enrolling $userids from ' . $mnetcourseid . ': ' . print_r($userids, true));
+    
+    $mnetserviceenrolcourses = get_remote_host_and_course_ids($mnetcourseid);
+    error_log('$mnetserviceenrolcourses: ' . print_r($mnetserviceenrolcourses, true));
+    
+    $remotecourse = get_remote_course($mnetserviceenrolcourses->hostid,
+                                      $mnetserviceenrolcourses->remoteid);
+    
+    error_log('$remotecourse: ' . print_r($remotecourse, true));
+    
 }

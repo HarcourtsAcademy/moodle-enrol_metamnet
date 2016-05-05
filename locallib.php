@@ -42,19 +42,21 @@ class enrol_metamnet_handler {
      * @return void
      */
     protected static function sync_course_instances($courseid, $userid) {
-        global $DB;
-        /* Todo: write sync_course_instances() function.
-         */
         
-        // Get metamnet enrolment instances for the course
-        $metamnet_enrol_instances = get_metamnet_enrolment_instances($courseid);
+        // Get all enrolment instances for the course
+        $course_enrolment_instances = get_enrolment_instances($courseid);
+        $metamnet_enrol_instances = filter_metamnet_enrolment_instances($course_enrolment_instances);
         if (empty($metamnet_enrol_instances)) {
+            // Skip if there are no metamnet enrolment instances
             return;
         }
         
-        error_log('$metamnet_enrol_instances: ' . print_r($metamnet_enrol_instances, true));
+        $enrolment_instance_ids = filter_enrolment_ids($course_enrolment_instances);
         
         // Get active user enrolments for the user in the course
+        $user_enrolments = get_user_enrolments_from_ids($userid, $enrolment_instance_ids);
+        
+        error_log('$user_enrolments: ' . print_r($user_enrolments, true));
 //        $user_enrolments = $DB->get_records('user_enrolments', array('userid'=>$userid, 'status'=>ENROL_USER_ACTIVE), '', '*');
         
         // If there are no meta mnet user enrolments then prepare the user
@@ -112,12 +114,70 @@ function enrol_metamnet_sync($enrolid = NULL) {
 }
 
 /**
- * Get all metmnet enrolment instances for a course
+ * Get all enrolment ids from an array of enrolment instances
+ *
+ * @param stdClass[] array of all enrolment instances
+ * @return stdClass[]|null array of all enrolment instance ids
+ */
+function filter_enrolment_ids($course_enrolment_instances) {
+    $enrolment_ids = array();
+    
+    foreach ($course_enrolment_instances as $instance) {
+        // avoid duplicates
+        $enrolment_ids[$instance->id] = $instance->id;
+    }
+    
+    return $enrolment_ids;
+}
+
+/**
+ * Get all metamnet enrolment instances for a course
+ *
+ * @param stdClass[] $course_enrolment_instances
+ * @return stdClass[]|null array of metamnet enrolment instances
+ */
+function filter_metamnet_enrolment_instances($course_enrolment_instances) {
+    $metamnet_enrolment_instances = array();
+    
+    foreach ($course_enrolment_instances as $instance) {
+        if ($instance->enrol == 'metamnet') {
+            $metamnet_enrolment_instances[] = $instance;
+        }
+    }
+    
+    return $metamnet_enrolment_instances;
+}
+
+/**
+ * Get all enrolment instances for a course
  *
  * @param int $courseid one course id, empty mean all
- * @return stdClass[]|null array of metamnet enrolment instances for the course(s)
+ * @return stdClass[]|null array of all enrolment instances for the course(s)
  */
-function get_metamnet_enrolment_instances($courseid) {
+function get_enrolment_instances($courseid) {
     global $DB;
-    return $DB->get_records('enrol', array('courseid'=>$courseid, 'enrol'=>'metamnet'), '', '*');
+    return $DB->get_records('enrol', array('courseid'=>$courseid), '', '*');
+}
+
+/**
+ * Get all user enrolments from enrolment ids
+ *
+ * @param int $userid
+ * @param int[] $enrolment_instance_ids array of enrolment instance ids
+ * @return stdClass[]|null array of all user enrolments
+ */
+function get_user_enrolments_from_ids($userid, $enrolment_instance_ids) {
+    global $DB;
+    
+    $sql = "SELECT *
+            FROM {user_enrolments} ue
+            WHERE ue.enrolid in (:enrolids)
+              AND ue.userid = :userid
+              AND ue.status = :status";
+    return $DB->get_records_sql($sql,
+                        array(
+                            'enrolids'=>implode(',', $enrolment_instance_ids),
+                            'userid'=>$userid,
+                            'status'=>ENROL_USER_ACTIVE
+                        ));
 }

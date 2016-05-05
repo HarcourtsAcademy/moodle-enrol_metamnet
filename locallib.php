@@ -44,42 +44,30 @@ class enrol_metamnet_handler {
     protected static function sync_course_instances($courseid, $userid) {
         
         // Get all enrolment instances for the course
-        $course_enrolment_instances = get_enrolment_instances($courseid);
-        $metamnet_enrol_instances = filter_metamnet_enrolment_instances($course_enrolment_instances);
-        if (empty($metamnet_enrol_instances)) {
+        $courseenrolmentinstances = get_enrolment_instances($courseid);
+        $metamnetenrolinstances = filter_metamnet_enrolment_instances($courseenrolmentinstances);
+        if (empty($metamnetenrolinstances)) {
             // Skip if there are no metamnet enrolment instances
             return;
         }
         
-        $enrolment_instance_ids = filter_enrolment_ids($course_enrolment_instances);
-        error_log('$enrolment_instance_ids: ' . print_r($enrolment_instance_ids, true));
+        $enrolmentinstanceids = filter_enrolment_ids($courseenrolmentinstances);
+        error_log('$enrolment_instance_ids: ' . print_r($enrolmentinstanceids, true));
         
         // Get active (non-metamnet) user enrolments for the user in the course
-        $user_enrolments = get_user_enrolments_from_ids($userid, $enrolment_instance_ids);
+        $userenrolments = get_user_enrolments_from_ids($userid, $enrolmentinstanceids);
         
-        if (empty($user_enrolments)) {
+        if (empty($userenrolments)) {
             // unenrol the user from all metamnet enrolled courses
-            foreach ($metamnet_enrol_instances as $metamnet_instance) {
-                remote_unenrol(array($userid), $metamnet_instance->customint1);
+            foreach ($metamnetenrolinstances as $metamnetinstance) {
+                remote_unenrol(array($userid), $metamnetinstance->customint1);
             }
         } else {
             // enrol the user from all metamnet enrolled courses
-            foreach ($metamnet_enrol_instances as $metamnet_instance) {
-                remote_enrol(array($userid), $metamnet_instance->customint1);
+            foreach ($metamnetenrolinstances as $metamnetinstance) {
+                remote_enrol(array($userid), $metamnetinstance->customint1);
             }
         }
-        
-        error_log('$user_enrolments: ' . print_r($user_enrolments, true));
-        
-        // If there are no meta mnet user enrolments then prepare the user
-        // enrolment for remote enrolment
-        
-        // If there are is only a meta mnet user enrolments and no other,
-        // prepare the user enrolment for remote unenrolment
-
-        // Get the host and remote course from the mnetservice_enrol_courses table
-        
-        
     }
 }
 
@@ -131,37 +119,37 @@ function enrol_metamnet_sync($enrolid = NULL) {
  * @param stdClass[] array of all enrolment instances
  * @return stdClass[]|null array of all enrolment instance ids
  */
-function filter_enrolment_ids($course_enrolment_instances) {
-    $enrolment_ids = array();
+function filter_enrolment_ids($courseenrolmentinstances) {
+    $enrolmentids = array();
     
-    foreach ($course_enrolment_instances as $instance) {
+    foreach ($courseenrolmentinstances as $instance) {
         // skip metamnet enrolment instances
         if ($instance->enrol == 'metamnet') {
             continue;
         }
         // avoid duplicates
-        $enrolment_ids[$instance->id] = $instance->id;
+        $enrolmentids[$instance->id] = $instance->id;
     }
     
-    return $enrolment_ids;
+    return $enrolmentids;
 }
 
 /**
  * Get all metamnet enrolment instances for a course
  *
- * @param stdClass[] $course_enrolment_instances
+ * @param stdClass[] $courseenrolmentinstances
  * @return stdClass[]|null array of metamnet enrolment instances
  */
-function filter_metamnet_enrolment_instances($course_enrolment_instances) {
-    $metamnet_enrolment_instances = array();
+function filter_metamnet_enrolment_instances($courseenrolmentinstances) {
+    $metamnetenrolmentinstances = array();
     
-    foreach ($course_enrolment_instances as $instance) {
+    foreach ($courseenrolmentinstances as $instance) {
         if ($instance->enrol == 'metamnet') {
-            $metamnet_enrolment_instances[] = $instance;
+            $metamnetenrolmentinstances[] = $instance;
         }
     }
     
-    return $metamnet_enrolment_instances;
+    return $metamnetenrolmentinstances;
 }
 
 /**
@@ -176,13 +164,23 @@ function get_enrolment_instances($courseid) {
 }
 
 /**
+ * Get the remote host and course ids
+ *
+ * @param int $mnetcourseid of the remote course in the mnetservice_enrol_courses table
+ * @return int[]|null array containing the remote host and course ids
+ */
+function get_remote_host_and_course($mnetcourseid) {
+    global $DB;
+}
+
+/**
  * Get all user enrolments from enrolment ids
  *
  * @param int $userid
- * @param int[] $enrolment_instance_ids array of enrolment instance ids
+ * @param int[] $enrolmentinstanceids array of enrolment instance ids
  * @return stdClass[]|null array of all user enrolments
  */
-function get_user_enrolments_from_ids($userid, $enrolment_instance_ids) {
+function get_user_enrolments_from_ids($userid, $enrolmentinstanceids) {
     global $DB;
     
     $sql = "SELECT *
@@ -192,7 +190,7 @@ function get_user_enrolments_from_ids($userid, $enrolment_instance_ids) {
               AND ue.status = :status";
     return $DB->get_records_sql($sql,
                         array(
-                            'enrolids'=>implode(',', $enrolment_instance_ids),
+                            'enrolids'=>implode(',', $enrolmentinstanceids),
                             'userid'=>$userid,
                             'status'=>ENROL_USER_ACTIVE
                         ));
@@ -202,20 +200,22 @@ function get_user_enrolments_from_ids($userid, $enrolment_instance_ids) {
  * Enrol the user(s) in the remote MNet course
  *
  * @param int[] $userids
- * @param int $mnet_course_id id of the course (mnetservice_enrol_courses)
+ * @param int $mnetcourseid id of the course (mnetservice_enrol_courses)
  * @return bool true if successful
  */
-function remote_enrol($userids, $mnet_course_id) {
-    error_log('Remote enrolling $userids from $mnet_course_id: ' . print_r($userids, true));
+function remote_enrol($userids, $mnetcourseid) {
+    error_log('Remote enrolling $userids from ' . $mnetcourseid . ': ' . print_r($userids, true));
+    
+    
 }
 
 /**
  * Unenrol the user(s) in the remote MNet course
  *
  * @param int[] $userids
- * @param int $mnet_course_id id of the course (mnetservice_enrol_courses)
+ * @param int $mnetcourseid id of the course (mnetservice_enrol_courses)
  * @return bool true if successful
  */
-function remote_unenrol($userids, $mnet_course_id) {
-    error_log('Remote un-enrolling $userids from $mnet_course_id: ' . print_r($userids, true));
+function remote_unenrol($userids, $mnetcourseid) {
+    error_log('Remote un-enrolling $userids from ' . $mnetcourseid . ': ' . print_r($userids, true));
 }

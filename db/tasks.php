@@ -28,8 +28,8 @@ $tasks = array(
     array(
         'classname' => '\enrol_metamnet\task\metamnet_sync_task',
         'blocking' => 0,
-        'minute' => '0',
-        'hour' => '1',
+        'minute' => '30',
+        'hour' => '*',
         'day' => '*',
         'dayofweek' => '*',
         'month' => '*'

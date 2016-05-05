@@ -220,8 +220,7 @@ class enrol_metamnet_handler {
 
         foreach($enroluserids as $enroluser) {
             $user = $DB->get_record('user', array('id'=>$enroluser), '*', MUST_EXIST);
-//            $result = $service->req_enrol_user($user, $course);
-            $result = false;
+            $result = $this->mnetservice->req_enrol_user($user, $remotecourse);
             if ($result !== true) {
                 error_log($this->mnetservice->format_error_message($result));
             }

@@ -56,13 +56,7 @@ class metamnet_sync_task extends \core\task\scheduled_task {
 
         // Instance of enrol_flatfile_plugin.
         $plugin = enrol_get_plugin('metamnet');
-        // todo: $result = $plugin->sync(new \null_progress_trace());
-        $result = true; // todo: remove
-        
-        error_log('metamnet_sync_task run: ' .time());
-        
-        return $result;
-
+        return $plugin->sync();
     }
 
 }

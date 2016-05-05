@@ -31,50 +31,36 @@ require_once($CFG->dirroot.'/mnet/service/enrol/locallib.php');
  * Event handler for Meta MNet enrolment plugin.
  *
  * We try to keep everything in sync via listening to events,
- * it may fail sometimes, so we always do a full sync in cron too.
+ * it may fail sometimes, so we always do a full sync in a
+ * scheduled task too.
  */
 class enrol_metamnet_handler {
-    
-    public $mnetservice;
-    
-    public function __construct() {
-        $this->mnetservice = mnetservice_enrol::get_instance();
-    }
 
     /**
      * Synchronise Meta MNet enrolments of this user in this course
-     * @static
+     * 
      * @param int $courseid
      * @param int $userid
      * @return void
      */
     public function sync_course_instances($courseid, $userid) {
         
-        // Get all enrolment instances for the course
-        $courseenrolmentinstances = $this->get_enrolment_instances($courseid);
-        $metamnetenrolinstances = $this->filter_metamnet_enrolment_instances($courseenrolmentinstances);
-        if (empty($metamnetenrolinstances)) {
-            // Skip if there are no metamnet enrolment instances
-            return;
-        }
+        $helper = new enrol_metamnet_helper();
         
-        $enrolmentinstanceids = $this->filter_enrolment_ids($courseenrolmentinstances);
-        error_log('$enrolment_instance_ids: ' . print_r($enrolmentinstanceids, true));
-        
-        // Get active (non-metamnet) user enrolments for the user in the course
-        $userenrolments = $this->get_user_enrolments_from_ids($userid, $enrolmentinstanceids);
-        
-        if (empty($userenrolments)) {
-            // unenrol the user from all metamnet enrolled courses
-            foreach ($metamnetenrolinstances as $metamnetinstance) {
-                $this->remote_unenrol(array($userid), $metamnetinstance->customint1);
-            }
-        } else {
-            // enrol the user from all metamnet enrolled courses
-            foreach ($metamnetenrolinstances as $metamnetinstance) {
-                $this->remote_enrol(array($userid), $metamnetinstance->customint1);
-            }
-        }
+        $helper->sync_user_in_course($courseid, $userid);
+    }
+}
+
+/**
+ * Helper for Meta MNet enrolment plugin.
+ *
+ */
+class enrol_metamnet_helper {
+    
+    public $mnetservice;
+    
+    public function __construct() {
+        $this->mnetservice = mnetservice_enrol::get_instance();
     }
     
     /**
@@ -257,6 +243,41 @@ class enrol_metamnet_handler {
             }
         }
 
+    }
+    
+    /**
+     * Sync a user in a course with a remote mnet course
+     *
+     * @param int $courseid of the local course
+     * @param int $userid of the local user
+     * @return null
+     */
+    public function sync_user_in_course($courseid, $userid) {
+        // Get all enrolment instances for the course
+        $courseenrolmentinstances = $this->get_enrolment_instances($courseid);
+        $metamnetenrolinstances = $this->filter_metamnet_enrolment_instances($courseenrolmentinstances);
+        if (empty($metamnetenrolinstances)) {
+            // Skip if there are no metamnet enrolment instances
+            return;
+        }
+        
+        $enrolmentinstanceids = $this->filter_enrolment_ids($courseenrolmentinstances);
+        error_log('$enrolment_instance_ids: ' . print_r($enrolmentinstanceids, true));
+        
+        // Get active (non-metamnet) user enrolments for the user in the course
+        $userenrolments = $this->get_user_enrolments_from_ids($userid, $enrolmentinstanceids);
+        
+        if (empty($userenrolments)) {
+            // unenrol the user from all metamnet enrolled courses
+            foreach ($metamnetenrolinstances as $metamnetinstance) {
+                $this->remote_unenrol(array($userid), $metamnetinstance->customint1);
+            }
+        } else {
+            // enrol the user from all metamnet enrolled courses
+            foreach ($metamnetenrolinstances as $metamnetinstance) {
+                $this->remote_enrol(array($userid), $metamnetinstance->customint1);
+            }
+        }
     }
 }
 

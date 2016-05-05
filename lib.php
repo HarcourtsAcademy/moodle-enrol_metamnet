@@ -25,6 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once("$CFG->dirroot/enrol/metamnet/locallib.php");
+
 class enrol_metamnet_plugin extends enrol_plugin {
 
     /**
@@ -299,4 +301,14 @@ class enrol_metamnet_plugin extends enrol_plugin {
     public function sync_user_enrolments($user) {
         // todo: write this function.
     }
+    
+    /**
+     * Forces synchronisation of all meta mnet enrolments.
+     * 
+     * @return void
+     */
+    public function sync() {
+        error_log('metamnet_sync_task run: ' .time());
+    }
+    
 }

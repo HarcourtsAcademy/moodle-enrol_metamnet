@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/enrol/metamnet/locallib.php');
 
-class enrol_metamnet_observer extends enrol_metamnet_handler {
+class enrol_metamnet_observer {
 
     /**
      * Triggered via user_enrolment_created event.
@@ -42,8 +42,10 @@ class enrol_metamnet_observer extends enrol_metamnet_handler {
             // Ignore if the plugin is disabled.
             return true;
         }
+        
+        $enrolmetamnethandler = new enrol_metamnet_handler();
 
-        self::sync_course_instances($event->courseid, $event->relateduserid);
+        $enrolmetamnethandler->sync_course_instances($event->courseid, $event->relateduserid);
         error_log('enrol_metamnet: user_enrolment_created reached');
         
         return true;
@@ -61,7 +63,9 @@ class enrol_metamnet_observer extends enrol_metamnet_handler {
             return true;
         }
 
-        self::sync_course_instances($event->courseid, $event->relateduserid);
+        $enrolmetamnethandler = new enrol_metamnet_handler();
+
+        $enrolmetamnethandler->sync_course_instances($event->courseid, $event->relateduserid);
         error_log('enrol_metamnet: user_enrolment_deleted called');
 
         return true;

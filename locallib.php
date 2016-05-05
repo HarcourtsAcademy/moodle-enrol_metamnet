@@ -117,7 +117,7 @@ class enrol_metamnet_helper {
         $metamnetenrolmentinstances = array();
 
         foreach ($courseenrolmentinstances as $instance) {
-            if ($instance->enrol == 'metamnet') {
+            if ($instance->enrol == 'metamnet' and $instance->status == ENROL_INSTANCE_ENABLED) {
                 $metamnetenrolmentinstances[] = $instance;
             }
         }
@@ -288,8 +288,6 @@ class enrol_metamnet_helper {
  * @return int 0 means ok, 1 means error, 2 means plugin disabled
  */
 function enrol_metamnet_sync($enrolid = NULL) {
-    global $DB;
-    
     if (empty($enrolid)) {
         return 1;
     }
@@ -303,7 +301,7 @@ function enrol_metamnet_sync($enrolid = NULL) {
     // Prepare all user enrolments for cron sync
     
     // Get existing user enrolments
-    $userenrolments = $DB->get_records('user_enrolments', array('enrolid' => $enrolid), '', '*');
+    
     
     /* Update all existing user enrolments with the following information 
      * - status: ENROL_USER_ACTIVE (enrollib)

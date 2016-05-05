@@ -144,6 +144,8 @@ class enrol_metamnet_plugin extends enrol_plugin {
 
         require_once("$CFG->dirroot/enrol/metamnet/locallib.php");
         
+        error_log('Running enrol_metamnet cron: ' . time());
+        
         /* todo: manual trigger sync of ALL courses here?
         enrol_meta_sync();
          * 

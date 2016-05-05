@@ -15,16 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'enrol_metamnet', language 'en'.
+ * Definition of meta mnet enrolment scheduled tasks.
  *
- * @package     enrol_metamnet
- * @author      Tim Butler
- * @copyright   2016 Harcourts International Limited {@link http://www.harcourtsacademy.com}
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    enrol_metamnet
+ * @copyright  2016 Harcourts International Limited {@link http://www.harcourtsacademy.com}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Meta MNet Enrolment';
-$string['pluginname_desc'] = 'Meta MNet Enrolment plugin synchronises enrolments across Moodle MNet hosts.';
+defined('MOODLE_INTERNAL') || die();
 
-$string['metamnetsync'] = 'Meta MNet Enrolment Sync';
-$string['inuse'] = '(In use)';
+$tasks = array(
+    array(
+        'classname' => '\enrol_metamnet\task\metamnet_sync_task',
+        'blocking' => 0,
+        'minute' => '0',
+        'hour' => '1',
+        'day' => '*',
+        'dayofweek' => '*',
+        'month' => '*'
+    )
+);

@@ -54,7 +54,7 @@ class metamnet_sync_task extends \core\task\scheduled_task {
             return;
         }
 
-        // Instance of enrol_flatfile_plugin.
+        // Instance of enrol_metamnet_plugin.
         $plugin = enrol_get_plugin('metamnet');
         return $plugin->sync();
     }

@@ -25,6 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot.'/mnet/service/enrol/locallib.php');
 
 /**
  * Event handler for Meta MNet enrolment plugin.
@@ -69,6 +70,31 @@ class enrol_metamnet_handler {
             }
         }
     }
+}
+
+/**
+ * Fetches updated course enrolments from remote courses
+ *
+ * @param int $hostid of MNet host
+ * @param int $courseid of MNet course
+ * @param bool $usecache true to force remote refresh
+ * @return null
+ */
+function check_cache($hostid, $courseid, $usecache = true) {
+    $lastfetchenrolments = get_config('mnetservice_enrol', 'lastfetchenrolments');
+    
+    $service = mnetservice_enrol::get_instance();
+    
+    if (!$usecache or empty($lastfetchenrolments) or (time()-$lastfetchenrolments > 600)) {
+        // fetch fresh data from remote if forced or every 10 minutes
+        $usecache = false;
+        $result = $service->req_course_enrolments($hostid, $courseid, $usecache);
+        if ($result !== true) {
+            error_log($service->format_error_message($result));
+        }
+    }
+    
+    return;
 }
 
 /**
@@ -224,6 +250,8 @@ function remote_enrol($userids, $mnetcourseid) {
     $mnetserviceenrolcourses = get_remote_host_and_course_ids($mnetcourseid);
     error_log('$mnetserviceenrolcourses: ' . print_r($mnetserviceenrolcourses, true));
     
+    check_cache($mnetserviceenrolcourses->hostid, $mnetserviceenrolcourses->remoteid);
+    
     $remotecourse = get_remote_course($mnetserviceenrolcourses->hostid,
                                       $mnetserviceenrolcourses->remoteid);
     
@@ -242,6 +270,8 @@ function remote_unenrol($userids, $mnetcourseid) {
     
     $mnetserviceenrolcourses = get_remote_host_and_course_ids($mnetcourseid);
     error_log('$mnetserviceenrolcourses: ' . print_r($mnetserviceenrolcourses, true));
+    
+    check_cache($mnetserviceenrolcourses->hostid, $mnetserviceenrolcourses->remoteid);
     
     $remotecourse = get_remote_course($mnetserviceenrolcourses->hostid,
                                       $mnetserviceenrolcourses->remoteid);

@@ -155,6 +155,17 @@ class enrol_metamnet_helper {
         global $DB;
         return $DB->get_records('enrol', array('courseid'=>$courseid), '', '*');
     }
+    
+    /**
+     * Get all userid for locally enrolled users not enrolled remotely
+     *
+     * @param stdClass[] $localuserenrolments array of user_enrolment objects
+     * @param stdClass[] $remoteuserenrolments array of mnetservice_enrol_enrolments objects
+     * @return stdClass[]|null array of all local user enrolment objects not enrolled remotely
+     */
+    protected function get_local_users_to_enrol($localuserenrolments, $remoteuserenrolments) {
+        return array_udiff($localuserenrolments, $remoteuserenrolments, 'compare_by_userid');
+    }
 
     /**
      * Get a remote MNet course
@@ -167,6 +178,25 @@ class enrol_metamnet_helper {
         global $DB;
         return $DB->get_record('mnetservice_enrol_courses', array('remoteid'=>$courseid, 'hostid'=>$hostid), '*', MUST_EXIST);
     }
+    
+    /**
+     * Get remote MNet course enrolments
+     *
+     * @param int $mnetcourseid of the remote course in the mnetservice_enrol_courses table
+     * @return stdClass[]|null remote enrolments
+     */
+    protected function get_remote_course_enrolments($mnetcourseid) {
+        global $DB;
+        
+        $remotecourses = $this->get_remote_host_and_course_ids($mnetcourseid);
+        $this->check_cache($remotecourses->hostid, $remotecourses->remoteid);
+        
+        
+        return $DB->get_records('mnetservice_enrol_enrolments', array(
+                                        'hostid'=>$remotecourses->hostid,
+                                        'remotecourseid'=>$remotecourses->remoteid),
+                                '', '*');
+    }
 
     /**
     * Get the remote host and course ids
@@ -177,6 +207,10 @@ class enrol_metamnet_helper {
     protected function get_remote_host_and_course_ids($mnetcourseid) {
         global $DB;
         return $DB->get_record('mnetservice_enrol_courses', array('id'=>$mnetcourseid),'hostid,remoteid', MUST_EXIST);
+    }
+    
+    protected function get_remote_users_to_unenrol() {
+        
     }
 
     /**
@@ -297,8 +331,15 @@ class enrol_metamnet_helper {
         
         // Get active (non-metamnet) user enrolments for all users
         $userenrolments = $this->get_user_enrolments($enrolmentinstanceids);
-        
         error_log('$userenrolments: ' . print_r($userenrolments, true));
+        
+        // Get remote cached remote enrolments
+        $remoteenrolments = $this->get_remote_course_enrolments($enrolinstance->customint1);
+        
+        error_log('$remoteenrolments: ' . print_r($remoteenrolments, true));
+        
+        $addusers = $this->get_local_users_to_enrol($userenrolments, $remoteenrolments);
+        
         
 //        if (empty($userenrolments)) {
 //            // unenrol the user from all metamnet enrolled courses
@@ -376,5 +417,22 @@ class enrol_metamnet_helper {
                 $this->remote_enrol(array($userid), $metamnetinstance->customint1);
             }
         }
+    }
+}
+
+/**
+ * Compare function for arrays of user enrolments objects
+ *
+ * @param stdClass[] $a array of user_enrolments or mnetservice_enrol_enrolments objects
+ * @param stdClass[] $b array of user_enrolments or mnetservice_enrol_enrolments objects
+ * @return int
+ */
+function compare_by_userid($a, $b) {
+    if ($a->userid < $b->userid) {
+        return -1;
+    } elseif ($a->userid > $b->userid) {
+        return 1;
+    } else {
+        return 0;
     }
 }

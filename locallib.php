@@ -135,6 +135,17 @@ class enrol_metamnet_helper {
     }
 
     /**
+     * Get an enrolment instances from the id
+     *
+     * @param int $enrolid the enrolment id
+     * @return stdClass|null the enrolment instance
+     */
+    protected function get_enrolment_instance($enrolid) {
+        global $DB;
+        return $DB->get_record('enrol', array('id'=>$enrolid), '*');
+    }
+    
+    /**
      * Get all enrolment instances for a course
      *
      * @param int $courseid one course id, empty mean all
@@ -169,26 +180,36 @@ class enrol_metamnet_helper {
     }
 
     /**
-     * Get all user enrolments from enrolment ids
+     * Get all user enrolments for a single user or all users
      *
-     * @param int $userid
      * @param int[] $enrolmentinstanceids array of enrolment instance ids
+     * @param int $userid
      * @return stdClass[]|null array of all user enrolments
      */
-    protected function get_user_enrolments_from_ids($userid, $enrolmentinstanceids) {
+    protected function get_user_enrolments($enrolmentinstanceids, $userid = null) {
         global $DB;
+        
+        if (!empty($userid)) {
+            $sql = "SELECT *
+                    FROM {user_enrolments} ue
+                    WHERE ue.enrolid in (:enrolids)
+                      AND ue.userid = :userid
+                      AND ue.status = :status";
+            $params = array('enrolids'=>implode(',', $enrolmentinstanceids),
+                            'userid'=>$userid,
+                            'status'=>ENROL_USER_ACTIVE
+                            );
+        } else {
+            $sql = "SELECT *
+                    FROM {user_enrolments} ue
+                    WHERE ue.enrolid in (:enrolids)
+                      AND ue.status = :status";
+            $params = array('enrolids'=>implode(',', $enrolmentinstanceids),
+                            'status'=>ENROL_USER_ACTIVE
+                            );
+        }
 
-        $sql = "SELECT *
-                FROM {user_enrolments} ue
-                WHERE ue.enrolid in (:enrolids)
-                  AND ue.userid = :userid
-                  AND ue.status = :status";
-        return $DB->get_records_sql($sql,
-                            array(
-                                'enrolids'=>implode(',', $enrolmentinstanceids),
-                                'userid'=>$userid,
-                                'status'=>ENROL_USER_ACTIVE
-                            ));
+        return $DB->get_records_sql($sql, $params);
     }
 
     /**
@@ -255,7 +276,48 @@ class enrol_metamnet_helper {
     }
     
     /**
-     * Sync all meta mnet course links.
+     * Sync one meta mnet enrolment instance.
+     *
+     * @param stdClass $enrolinstance one enrolment instance
+     * @return true on success
+     */
+    public function sync_instance($enrolinstance) {
+        global $DB;
+        
+        if (!enrol_is_enabled('metamnet')) {
+            // Ignore if the plugin is disabled.
+            return false;
+        }
+
+        // Get all enrolment instances for the course
+        $courseenrolmentinstances = $this->get_enrolment_instances($enrolinstance->courseid);
+        
+        $enrolmentinstanceids = $this->filter_enrolment_ids($courseenrolmentinstances);
+        error_log('$enrolment_instance_ids: ' . print_r($enrolmentinstanceids, true));
+        
+        // Get active (non-metamnet) user enrolments for all users
+        $userenrolments = $this->get_user_enrolments($enrolmentinstanceids);
+        
+        error_log('$userenrolments: ' . print_r($userenrolments, true));
+        
+//        if (empty($userenrolments)) {
+//            // unenrol the user from all metamnet enrolled courses
+//            foreach ($metamnetenrolinstances as $metamnetinstance) {
+//                $this->remote_unenrol(array($userid), $metamnetinstance->customint1);
+//            }
+//        } else {
+//            // enrol the user from all metamnet enrolled courses
+//            foreach ($metamnetenrolinstances as $metamnetinstance) {
+//                $this->remote_enrol(array($userid), $metamnetinstance->customint1);
+//            }
+//        }
+
+        return true;
+
+    }
+    
+    /**
+     * Sync all meta mnet enrolment instances.
      *
      * @param int $enrolid one enrolment id, empty mean all
      * @return int 0 means ok, 1 means error, 2 means plugin disabled
@@ -269,30 +331,13 @@ class enrol_metamnet_helper {
 
         if (empty($enrolid)) {
             $allinstances = $this->get_all_metamnet_enrolment_instances();
-
-            
+        } else {
+            $allinstances = $this->get_enrolment_instance($enrolid);
         }
-
-        // todo: sync all enrolments when $enrolid == NULL
-
-        // Prepare all user enrolments for cron sync
-
-        // Get existing user enrolments
-
-
-        /* Update all existing user enrolments with the following information 
-         * - status: ENROL_USER_ACTIVE (enrollib)
-         * - timestart: 0
-         * - timeend: 0
-         * - modifierid: 0
-         * - timecreated: now()
-         * - timemodified: now()
-         * 
-         */
-
-        // Update existing enrollments
-
-        // Create new enrolmentsmys
+        
+        foreach ($allinstances as $instance) {
+            $this->sync_instance($instance);
+        }
 
         return 0;
 
@@ -318,7 +363,7 @@ class enrol_metamnet_helper {
         error_log('$enrolment_instance_ids: ' . print_r($enrolmentinstanceids, true));
         
         // Get active (non-metamnet) user enrolments for the user in the course
-        $userenrolments = $this->get_user_enrolments_from_ids($userid, $enrolmentinstanceids);
+        $userenrolments = $this->get_user_enrolments($enrolmentinstanceids, $userid);
         
         if (empty($userenrolments)) {
             // unenrol the user from all metamnet enrolled courses

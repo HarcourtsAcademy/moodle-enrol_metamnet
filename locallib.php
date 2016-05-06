@@ -157,7 +157,7 @@ class enrol_metamnet_helper {
     }
     
     /**
-     * Get all userid for locally enrolled users not enrolled remotely
+     * Get all user enrolments for locally enrolled users not enrolled remotely
      *
      * @param stdClass[] $localuserenrolments array of user_enrolment objects
      * @param stdClass[] $remoteuserenrolments array of mnetservice_enrol_enrolments objects
@@ -209,8 +209,15 @@ class enrol_metamnet_helper {
         return $DB->get_record('mnetservice_enrol_courses', array('id'=>$mnetcourseid),'hostid,remoteid', MUST_EXIST);
     }
     
-    protected function get_remote_users_to_unenrol() {
-        
+    /**
+     * Get all user enrolments for remotely enrolled users not enrolled locally
+     *
+     * @param stdClass[] $remoteuserenrolments array of mnetservice_enrol_enrolments objects
+     * @param stdClass[] $localuserenrolments array of user_enrolment objects
+     * @return stdClass[]|null array of all local user enrolment objects not enrolled remotely
+     */
+    protected function get_remote_users_to_unenrol($localuserenrolments, $remoteuserenrolments) {
+        return array_udiff($remoteuserenrolments, $localuserenrolments, 'compare_by_userid');
     }
 
     /**
@@ -327,19 +334,19 @@ class enrol_metamnet_helper {
         $courseenrolmentinstances = $this->get_enrolment_instances($enrolinstance->courseid);
         
         $enrolmentinstanceids = $this->filter_enrolment_ids($courseenrolmentinstances);
-        error_log('$enrolment_instance_ids: ' . print_r($enrolmentinstanceids, true));
+//        error_log('$enrolment_instance_ids: ' . print_r($enrolmentinstanceids, true));
         
         // Get active (non-metamnet) user enrolments for all users
         $userenrolments = $this->get_user_enrolments($enrolmentinstanceids);
-        error_log('$userenrolments: ' . print_r($userenrolments, true));
+//        error_log('$userenrolments: ' . print_r($userenrolments, true));
         
         // Get remote cached remote enrolments
         $remoteenrolments = $this->get_remote_course_enrolments($enrolinstance->customint1);
         
-        error_log('$remoteenrolments: ' . print_r($remoteenrolments, true));
+//        error_log('$remoteenrolments: ' . print_r($remoteenrolments, true));
         
         $addusers = $this->get_local_users_to_enrol($userenrolments, $remoteenrolments);
-        
+        $removeusers = $this->get_remote_users_to_unenrol($userenrolments, $remoteenrolments);
         
 //        if (empty($userenrolments)) {
 //            // unenrol the user from all metamnet enrolled courses

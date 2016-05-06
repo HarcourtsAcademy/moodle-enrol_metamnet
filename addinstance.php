@@ -67,12 +67,14 @@ if ($mform->is_cancelled()) {
     if ($instance) {
         if ($data->customint1 != $instance->customint1) {
             $DB->update_record('enrol', array('id' => $instance->id, 'customint1' => $data->customint1));
-            enrol_metamnet_sync($instance->id);
+            $helper = new enrol_metamnet_helper();
+            $helper->sync_instances($instance->id);
         }
     } else if (!in_array($data->customint1, $existing)) {
         $enrolid = $enrol->add_instance($course, array('customint1' => $data->customint1));
         if ($enrolid) {
-            enrol_metamnet_sync($enrolid);
+            $helper = new enrol_metamnet_helper();
+            $helper->sync_instances($enrolid);
         }
     }
     redirect(new moodle_url('/enrol/instances.php', array('id' => $course->id)));

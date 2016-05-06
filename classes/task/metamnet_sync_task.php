@@ -50,10 +50,6 @@ class metamnet_sync_task extends \core\task\scheduled_task {
 
         require_once($CFG->dirroot . '/enrol/metamnet/lib.php');
 
-        if (!enrol_is_enabled('metamnet')) {
-            return;
-        }
-
         // Instance of enrol_metamnet_plugin.
         $plugin = enrol_get_plugin('metamnet');
         return $plugin->sync();

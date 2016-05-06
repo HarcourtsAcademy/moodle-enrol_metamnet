@@ -46,7 +46,6 @@ class enrol_metamnet_handler {
     public function sync_course_instances($courseid, $userid) {
         
         $helper = new enrol_metamnet_helper();
-        
         $helper->sync_user_in_course($courseid, $userid);
     }
 }
@@ -123,6 +122,16 @@ class enrol_metamnet_helper {
         }
 
         return $metamnetenrolmentinstances;
+    }
+    
+    /**
+     * Get all active metamnet enrolment instances for all courses
+     *
+     * @return stdClass[]|null array of all enrolment instances for all courses
+     */
+    protected function get_all_metamnet_enrolment_instances() {
+        global $DB;
+        return $DB->get_records('enrol', array('enrol'=>'metamnet', 'status'=>ENROL_INSTANCE_ENABLED), '', '*');
     }
 
     /**
@@ -246,6 +255,50 @@ class enrol_metamnet_helper {
     }
     
     /**
+     * Sync all meta mnet course links.
+     *
+     * @param int $enrolid one enrolment id, empty mean all
+     * @return int 0 means ok, 1 means error, 2 means plugin disabled
+     */
+    public function sync_instances($enrolid = NULL) {
+
+        if (!enrol_is_enabled('metamnet')) {
+            // Ignore if the plugin is disabled.
+            return 2;
+        }
+
+        if (empty($enrolid)) {
+            $allinstances = $this->get_all_metamnet_enrolment_instances();
+
+            
+        }
+
+        // todo: sync all enrolments when $enrolid == NULL
+
+        // Prepare all user enrolments for cron sync
+
+        // Get existing user enrolments
+
+
+        /* Update all existing user enrolments with the following information 
+         * - status: ENROL_USER_ACTIVE (enrollib)
+         * - timestart: 0
+         * - timeend: 0
+         * - modifierid: 0
+         * - timecreated: now()
+         * - timemodified: now()
+         * 
+         */
+
+        // Update existing enrollments
+
+        // Create new enrolmentsmys
+
+        return 0;
+
+    }
+    
+    /**
      * Sync a user in a course with a remote mnet course
      *
      * @param int $courseid of the local course
@@ -280,44 +333,3 @@ class enrol_metamnet_helper {
         }
     }
 }
-
-/**
- * Sync all meta mnet course links.
- *
- * @param int $enrolid one enrolment id, empty mean all
- * @return int 0 means ok, 1 means error, 2 means plugin disabled
- */
-function enrol_metamnet_sync($enrolid = NULL) {
-    if (empty($enrolid)) {
-        return 1;
-    }
-    
-    if (!enrol_is_enabled('metamnet')) {
-        return 2;
-    }
-    
-    // todo: sync all enrolments when $enrolid == NULL
-    
-    // Prepare all user enrolments for cron sync
-    
-    // Get existing user enrolments
-    
-    
-    /* Update all existing user enrolments with the following information 
-     * - status: ENROL_USER_ACTIVE (enrollib)
-     * - timestart: 0
-     * - timeend: 0
-     * - modifierid: 0
-     * - timecreated: now()
-     * - timemodified: now()
-     * 
-     */
-
-    // Update existing enrollments
-    
-    // Create new enrolmentsmys
-    
-    return 0;
-
-}
-

@@ -347,8 +347,8 @@ class enrol_metamnet_helper {
         $addusers = $this->get_local_users_to_enrol($userenrolments, $remoteenrolments);
         $removeusers = $this->get_remote_users_to_unenrol($userenrolments, $remoteenrolments);
         
-        error_log('$addusers: ' . print_r($addusers, true));
-        error_log('$removeusers: ' . print_r($removeusers, true));
+//        error_log('$addusers: ' . print_r($addusers, true));
+//        error_log('$removeusers: ' . print_r($removeusers, true));
         
         // enrol the users to add in all metamnet courses
         if (!empty($addusers)) {

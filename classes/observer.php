@@ -44,7 +44,6 @@ class enrol_metamnet_observer {
         }
         
         $enrolmetamnethandler = new enrol_metamnet_handler();
-
         $enrolmetamnethandler->sync_course_instances($event->courseid, $event->relateduserid);
         error_log('enrol_metamnet: user_enrolment_created reached');
         
@@ -64,7 +63,6 @@ class enrol_metamnet_observer {
         }
 
         $enrolmetamnethandler = new enrol_metamnet_handler();
-
         $enrolmetamnethandler->sync_course_instances($event->courseid, $event->relateduserid);
         error_log('enrol_metamnet: user_enrolment_deleted called');
 
@@ -82,7 +80,8 @@ class enrol_metamnet_observer {
             // Ignore if the plugin is disabled.
             return true;
         }
-        //self::sync_course_instances($event->courseid, $event->relateduserid);
+        $enrolmetamnethandler = new enrol_metamnet_handler();
+        $enrolmetamnethandler->sync_course_instances($event->courseid, $event->relateduserid);
         error_log('enrol_metamnet: user_enrolment_updated called');
 
         return true;

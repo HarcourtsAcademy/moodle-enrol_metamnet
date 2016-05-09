@@ -166,47 +166,34 @@ class enrol_metamnet_helper {
     protected function get_local_users_to_enrol($localuserenrolments, $remoteuserenrolments) {
         return array_udiff($localuserenrolments, $remoteuserenrolments, 'compare_by_userid');
     }
-
-    /**
-     * Get a remote MNet course
-     *
-     * @param int $hostid the MNet host id
-     * @param int $courseid the MNet course id
-     * @return stdClass|null the remote course
-     */
-    protected function get_remote_course($hostid, $courseid) {
-        global $DB;
-        return $DB->get_record('mnetservice_enrol_courses', array('remoteid'=>$courseid, 'hostid'=>$hostid), '*', MUST_EXIST);
-    }
     
     /**
      * Get remote MNet course enrolments
      *
-     * @param int $mnetcourseid of the remote course in the mnetservice_enrol_courses table
+     * @param stdClass $remotecourse remote course (mnetservice_enrol_courses)
      * @return stdClass[]|null remote enrolments
      */
-    protected function get_remote_course_enrolments($mnetcourseid) {
+    protected function get_remote_course_enrolments($remotecourse) {
         global $DB;
         
-        $remotecourses = $this->get_remote_host_and_course_ids($mnetcourseid);
-        $this->check_cache($remotecourses->hostid, $remotecourses->remoteid);
-        
+        $this->check_cache($remotecourse->hostid, $remotecourse->remoteid);
         
         return $DB->get_records('mnetservice_enrol_enrolments', array(
-                                        'hostid'=>$remotecourses->hostid,
-                                        'remotecourseid'=>$remotecourses->remoteid),
+                                        'hostid'=>$remotecourse->hostid,
+                                        'remotecourseid'=>$remotecourse->remoteid),
                                 '', '*');
+        
     }
 
     /**
     * Get the remote host and course ids
     *
-    * @param int $mnetcourseid of the remote course in the mnetservice_enrol_courses table
-    * @return int[]|null array containing the remote host and course ids
+    * @param int $mnetcourseid of the remote course (mnetservice_enrol_courses)
+    * @return stdClass|null remote course
     */
-    protected function get_remote_host_and_course_ids($mnetcourseid) {
+    protected function get_remote_course($mnetcourseid) {
         global $DB;
-        return $DB->get_record('mnetservice_enrol_courses', array('id'=>$mnetcourseid),'hostid,remoteid', MUST_EXIST);
+        return $DB->get_record('mnetservice_enrol_courses', array('id'=>$mnetcourseid), '*');
     }
     
     /**
@@ -257,29 +244,21 @@ class enrol_metamnet_helper {
      * Enrol the user(s) in the remote MNet course
      *
      * @param int[] $enroluserids
-     * @param int $mnetcourseid id of the course (mnetservice_enrol_courses)
+     * @param stdClass $remotecourse (mnetservice_enrol_courses)
      * @return bool true if successful
      */
-    protected function remote_enrol($enroluserids, $mnetcourseid) {
+    protected function remote_enrol($enroluserids, $remotecourse) {
         global $DB;
         
-        error_log('Remote enrolling $enroluserids from ' . $mnetcourseid . ': ' . print_r($enroluserids, true));
-
-        $mnetserviceenrolcourses = $this->get_remote_host_and_course_ids($mnetcourseid);
-        error_log('$mnetserviceenrolcourses: ' . print_r($mnetserviceenrolcourses, true));
-
-        $this->check_cache($mnetserviceenrolcourses->hostid, $mnetserviceenrolcourses->remoteid);
-
-        $remotecourse = $this->get_remote_course($mnetserviceenrolcourses->hostid,
-                                          $mnetserviceenrolcourses->remoteid);
-
-        error_log('$remotecourse: ' . print_r($remotecourse, true));
+        error_log('Remote enrolling $enroluserids from ' . $remotecourse->id . ': ' . print_r($enroluserids, true));
 
         foreach($enroluserids as $enroluser) {
             $user = $DB->get_record('user', array('id'=>$enroluser), '*', MUST_EXIST);
             $result = $this->mnetservice->req_enrol_user($user, $remotecourse);
             if ($result !== true) {
                 error_log($this->mnetservice->format_error_message($result));
+            } else {
+                return $result;
             }
         }
     }
@@ -288,29 +267,21 @@ class enrol_metamnet_helper {
      * Unenrol the user(s) in the remote MNet course
      *
      * @param int[] $unenroluserids
-     * @param int $mnetcourseid id of the course (mnetservice_enrol_courses)
+     * @param stdClass $remotecourse (mnetservice_enrol_courses)
      * @return bool true if successful
      */
-    protected function remote_unenrol($unenroluserids, $mnetcourseid) {
+    protected function remote_unenrol($unenroluserids, $remotecourse) {
         global $DB;
         
-        error_log('Remote un-enrolling $unenroluserids from ' . $mnetcourseid . ': ' . print_r($unenroluserids, true));
-
-        $mnetserviceenrolcourses = $this->get_remote_host_and_course_ids($mnetcourseid);
-        error_log('$mnetserviceenrolcourses: ' . print_r($mnetserviceenrolcourses, true));
-
-        $this->check_cache($mnetserviceenrolcourses->hostid, $mnetserviceenrolcourses->remoteid);
-
-        $remotecourse = $this->get_remote_course($mnetserviceenrolcourses->hostid,
-                                          $mnetserviceenrolcourses->remoteid);
-
-        error_log('$remotecourse: ' . print_r($remotecourse, true));
+        error_log('Remote un-enrolling $unenroluserids from ' . $remotecourse->id . ': ' . print_r($unenroluserids, true));
 
         foreach($unenroluserids as $unenroluser) {
             $user = $DB->get_record('user', array('id'=>$unenroluser), '*', MUST_EXIST);
             $result = $this->mnetservice->req_unenrol_user($user, $remotecourse);
             if ($result !== true) {
                 error_log($this->mnetservice->format_error_message($result));
+            } else {
+                return $result;
             }
         }
 
@@ -323,7 +294,6 @@ class enrol_metamnet_helper {
      * @return true on success
      */
     public function sync_instance($enrolinstance) {
-        global $DB;
         
         if (!enrol_is_enabled('metamnet')) {
             // Ignore if the plugin is disabled.
@@ -341,7 +311,8 @@ class enrol_metamnet_helper {
 //        error_log('$userenrolments: ' . print_r($userenrolments, true));
         
         // Get remote cached remote enrolments
-        $remoteenrolments = $this->get_remote_course_enrolments($enrolinstance->customint1);
+        $remotecourse = $this->get_remote_course($enrolinstance->customint1);
+        $remoteenrolments = $this->get_remote_course_enrolments($remotecourse);
         
 //        error_log('$remoteenrolments: ' . print_r($remoteenrolments, true));
         
@@ -416,12 +387,14 @@ class enrol_metamnet_helper {
         if (empty($userenrolments)) {
             // unenrol the user from all metamnet enrolled courses
             foreach ($metamnetenrolinstances as $metamnetinstance) {
-                $this->remote_unenrol(array($userid), $metamnetinstance->customint1);
+                $remotecourse = $this->get_remote_course($metamnetinstance->customint1);
+                $this->remote_unenrol(array($userid), $remotecourse);
             }
         } else {
-            // enrol the user from all metamnet enrolled courses
+            // enrol the user in all metamnet enrolled courses
             foreach ($metamnetenrolinstances as $metamnetinstance) {
-                $this->remote_enrol(array($userid), $metamnetinstance->customint1);
+                $remotecourse = $this->get_remote_course($metamnetinstance->customint1);
+                $this->remote_enrol(array($userid), $remotecourse);
             }
         }
     }

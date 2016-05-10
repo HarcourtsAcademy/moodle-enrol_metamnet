@@ -80,6 +80,7 @@ class enrol_metamnet_observer {
             // Ignore if the plugin is disabled.
             return true;
         }
+        
         $enrolmetamnethandler = new enrol_metamnet_handler();
         $enrolmetamnethandler->sync_course_instances($event->courseid, $event->relateduserid);
         error_log('enrol_metamnet: user_enrolment_updated called');
@@ -100,9 +101,8 @@ class enrol_metamnet_observer {
             return true;
         }
 
-        /* Todo: unenrol all users in the deleted course on all instances of
-         * the Meta MNet enrolment plugin.
-         */
+        $enrolmetamnethelper = new enrol_metamnet_helper();
+        $enrolmetamnethelper->sync_instances();
         error_log('enrol_metamnet: course_deleted called');
 
         return true;

@@ -294,8 +294,6 @@ class enrol_metamnet_helper {
     protected function remote_enrol($userids, $remotecourse) {
         global $DB;
         
-        // todo: check user is not already enrolled to avoid Attempting to recover grades notices in the error log.
-        
         if (is_array($userids)) {
             foreach($userids as $userid) {
                 $user = $DB->get_record('user', array('id'=>$userid), '*', MUST_EXIST);

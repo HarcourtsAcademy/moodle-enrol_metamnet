@@ -214,27 +214,6 @@ class enrol_metamnet_helper {
         
         return $DB->get_records_sql($sql);
     }
-
-
-    /**
-     * Get all user enrolments for locally enrolled users not enrolled remotely
-     *
-     * @param stdClass[] $localuserenrolments array of mnetservice_enrol_enrolments *like* objects
-     * @param stdClass[] $remoteuserenrolments array of mnetservice_enrol_enrolments objects
-     * @return int[]|null array of local userids not enrolled remotely
-     */
-    protected function get_local_users_to_enrol($localuserenrolments, $remoteuserenrolments) {
-        $adduserids = null;
-        $addusers = array_udiff($localuserenrolments, $remoteuserenrolments, 'compare_by_hostusercourse');
-        
-        if (!empty($addusers)) {
-            foreach ($addusers as $user) {
-                $adduserids[$user->id] = $user->id;
-            }
-        }
-        
-        return $adduserids;
-    }
     
     /**
      * Get all remote MNet course enrolments
@@ -270,26 +249,6 @@ class enrol_metamnet_helper {
     protected function get_remote_course($mnetcourseid) {
         global $DB;
         return $DB->get_record('mnetservice_enrol_courses', array('id'=>$mnetcourseid), '*');
-    }
-    
-    /**
-     * Get all user enrolments for remotely enrolled users not enrolled locally
-     *
-     * @param stdClass[] $remoteuserenrolments array of mnetservice_enrol_enrolments objects
-     * @param stdClass[] $localuserenrolments array of mnetservice_enrol_enrolments *like* objects
-     * @return int[]|null array of all local user ids not enrolled remotely
-     */
-    protected function get_remote_users_to_unenrol($localuserenrolments, $remoteuserenrolments) {
-        $removeuserids = null;
-        $removeusers = array_udiff($remoteuserenrolments, $localuserenrolments, 'compare_by_hostusercourse');
-        
-        if (!empty($removeusers)) {
-            foreach ($removeusers as $user) {
-                $removeuserids[$user->id] = $user->id;
-            }
-        }
-        
-        return $removeuserids;
     }
 
     /**
@@ -436,60 +395,6 @@ class enrol_metamnet_helper {
             }
         }
         return true;
-    }
-    
-    /**
-     * Sync one meta mnet enrolment instance.
-     *
-     * @param stdClass $enrolinstance one enrolment instance
-     * @return void
-     */
-    public function sync_instance($enrolinstance) {
-        
-        if (!enrol_is_enabled('metamnet')) {
-            // Ignore if the plugin is disabled.
-            return false;
-        }
-        
-        if (!is_object($enrolinstance)) {
-            trigger_error("enrolinstance must be an object", E_USER_ERROR);
-        }
-        
-        trigger_error("sync_instance function is depreciated.");
-
-        // Get all enrolment instances for the course
-        $courseenrolmentinstances = $this->get_enrolment_instances($enrolinstance->courseid);
-        
-        $enrolmentinstanceids = $this->filter_enrolment_ids($courseenrolmentinstances);
-//        error_log('$enrolment_instance_ids: ' . print_r($enrolmentinstanceids, true));
-        
-        // Get active (non-metamnet) user enrolments for all users
-        $userenrolments = $this->get_user_enrolments($enrolmentinstanceids);
-//        error_log('$userenrolments: ' . print_r($userenrolments, true));
-        
-        // Get remote cached remote enrolments
-        $remotecourse = $this->get_remote_course($enrolinstance->customint1);
-        error_log('$remotecourse: ' . print_r($remotecourse, true));
-        
-        $remoteenrolments = $this->get_remote_course_enrolments($remotecourse);
-        
-//        error_log('$remoteenrolments: ' . print_r($remoteenrolments, true));
-        
-        $addusers = $this->get_local_users_to_enrol($userenrolments, $remoteenrolments);
-        $removeusers = $this->get_remote_users_to_unenrol($userenrolments, $remoteenrolments);
-        
-//        error_log('$addusers: ' . print_r($addusers, true));
-//        error_log('$removeusers: ' . print_r($removeusers, true));
-        
-        // enrol the users to add in all metamnet courses
-        if (!empty($addusers)) {
-            $this->remote_enrol($addusers, $remotecourse);
-        }
-        
-        // unenrol users to remove from all metamnet courses
-        if (!empty($removeusers)) {
-            $this->remote_unenrol($removeusers, $remotecourse);
-        }
     }
     
     /**

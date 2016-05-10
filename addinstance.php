@@ -58,7 +58,7 @@ if ($instanceid) {
 $mform = new enrol_metamnet_addinstance_form(null, array('course' => $course, 'instance' => $instance));
 
 // get existing meta mnet enrollments to prevent duplicates
-$existing = $DB->get_fieldset_select('enrol', 'customint1', 'enrol = "metamnet"');
+$existing = $DB->get_fieldset_select('enrol', 'customint1', 'enrol = "metamnet" and courseid=' . $course->id);
 
 if ($mform->is_cancelled()) {
     redirect(new moodle_url('/enrol/instances.php', array('id'=>$course->id)));

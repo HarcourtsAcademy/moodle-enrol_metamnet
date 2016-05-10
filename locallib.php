@@ -142,7 +142,7 @@ class enrol_metamnet_helper {
      */
     protected function get_enrolment_instance($enrolid) {
         global $DB;
-        return $DB->get_record('enrol', array('id'=>$enrolid), '*');
+        return $DB->get_record('enrol', array('id'=>$enrolid, 'status'=>ENROL_INSTANCE_ENABLED), '*');
     }
     
     /**
@@ -325,6 +325,10 @@ class enrol_metamnet_helper {
             // Ignore if the plugin is disabled.
             return false;
         }
+        
+        if (!is_object($enrolinstance)) {
+            trigger_error("enrolinstance must be an object", E_USER_ERROR);
+        }
 
         // Get all enrolment instances for the course
         $courseenrolmentinstances = $this->get_enrolment_instances($enrolinstance->courseid);
@@ -373,13 +377,13 @@ class enrol_metamnet_helper {
             // Ignore if the plugin is disabled.
             return 2;
         }
-
+        
         if (empty($enrolid)) {
             $allinstances = $this->get_all_metamnet_enrolment_instances();
         } else {
-            $allinstances = $this->get_enrolment_instance($enrolid);
+            $allinstances[] = $this->get_enrolment_instance($enrolid);
         }
-        
+
         foreach ($allinstances as $instance) {
             $this->sync_instance($instance);
         }

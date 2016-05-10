@@ -308,7 +308,6 @@ class enrol_metamnet_plugin extends enrol_plugin {
      * @return void
      */
     public function sync() {
-        error_log('metamnet_sync_task run: ' .time());
         $helper = new enrol_metamnet_helper();
         $helper->sync_instances();
     }

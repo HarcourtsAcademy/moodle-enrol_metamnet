@@ -36,8 +36,6 @@ class enrol_metamnet_observer {
      * @return bool true on success.
      */
     public static function user_enrolment_created(\core\event\user_enrolment_created $event) {
-        error_log('enrol_metamnet: user_enrolment_created called');
-        
         if (!enrol_is_enabled('metamnet')) {
             // Ignore if the plugin is disabled.
             return true;
@@ -45,7 +43,6 @@ class enrol_metamnet_observer {
         
         $enrolmetamnethandler = new enrol_metamnet_handler();
         $enrolmetamnethandler->sync_course_instances($event->courseid, $event->relateduserid);
-        error_log('enrol_metamnet: user_enrolment_created reached');
         
         return true;
     }
@@ -64,7 +61,6 @@ class enrol_metamnet_observer {
 
         $enrolmetamnethandler = new enrol_metamnet_handler();
         $enrolmetamnethandler->sync_course_instances($event->courseid, $event->relateduserid);
-        error_log('enrol_metamnet: user_enrolment_deleted called');
 
         return true;
     }
@@ -83,7 +79,6 @@ class enrol_metamnet_observer {
         
         $enrolmetamnethandler = new enrol_metamnet_handler();
         $enrolmetamnethandler->sync_course_instances($event->courseid, $event->relateduserid);
-        error_log('enrol_metamnet: user_enrolment_updated called');
 
         return true;
     }
@@ -101,9 +96,10 @@ class enrol_metamnet_observer {
             return true;
         }
 
+        // Sync everything because deleting a course leave no trace of it or
+        // its enrolment instances when this event is observed.
         $enrolmetamnethelper = new enrol_metamnet_helper();
         $enrolmetamnethelper->sync_instances();
-        error_log('enrol_metamnet: course_deleted called');
 
         return true;
     }

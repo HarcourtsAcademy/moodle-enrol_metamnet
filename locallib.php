@@ -325,9 +325,7 @@ class enrol_metamnet_helper {
         if (empty($enrolments)) {
             return false;
         }
-        
-//        error_log('Remote enrolling $enrolments: ' . print_r($enrolments, true));
-        
+                
         foreach ($enrolments as $enrolment) {
             $user = $DB->get_record('user', array('id'=>$enrolment->userid), '*', MUST_EXIST);
             $remotecourse = $DB->get_record('mnetservice_enrol_courses', array(
@@ -352,8 +350,6 @@ class enrol_metamnet_helper {
     protected function remote_unenrol($userids, $remotecourse) {
         global $DB;
         
-        error_log('Remote un-enrolling $userids from ' . $remotecourse->id . ': ' . print_r($userids, true));
-
         if (is_array($userids)) {
             foreach ($userids as $userid) {
                 $user = $DB->get_record('user', array('id'=>$userid), '*', MUST_EXIST);
@@ -448,7 +444,6 @@ class enrol_metamnet_helper {
         }
         
         $enrolmentinstanceids = $this->filter_enrolment_ids($courseenrolmentinstances);
-        error_log('$enrolment_instance_ids: ' . print_r($enrolmentinstanceids, true));
         
         // Get active (non-metamnet) user enrolments for the user in the course
         $userenrolments = $this->get_user_enrolments($enrolmentinstanceids, $userid);

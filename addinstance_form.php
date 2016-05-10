@@ -71,7 +71,7 @@ class enrol_metamnet_addinstance_form extends moodleform {
         }
         
         // get existing meta mnet enrollments to prevent duplicates
-        $existing = $DB->get_fieldset_select('enrol', 'customint1', 'enrol = "metamnet"');
+        $existing = $DB->get_fieldset_select('enrol', 'customint1', 'enrol = "metamnet" and courseid=' . $course->id);
         
         foreach ($hosts as $host) {
             $mform->addElement('html', '<h3><a href="' . $host->hosturl . '">' . s($host->hostname) . '</a></h3>');

@@ -424,14 +424,11 @@ class enrol_metamnet_helper {
             return false;
         }
         
-//        error_log('Remote unenrolling $enrolments: ' . print_r($enrolments, true));
-        
         foreach ($enrolments as $enrolment) {
             $user = $DB->get_record('user', array('id'=>$enrolment->userid), '*', MUST_EXIST);
             $remotecourse = $DB->get_record('mnetservice_enrol_courses', array(
                                             'hostid'=>$enrolment->hostid, 
                                             'remoteid'=>$enrolment->remotecourseid), '*', MUST_EXIST);
-//            error_log('Remote unenrole user: ' . $user->id . ' from course:'. print_r($remotecourse, true));
             $result = $this->mnetservice->req_unenrol_user($user, $remotecourse);
             if ($result !== true) {
                 error_log($this->mnetservice->format_error_message($result));
@@ -463,16 +460,11 @@ class enrol_metamnet_helper {
         
         // Get all enrolment instances in courses with metamnet instances
         $correctenrolments = $this->get_correct_course_enrolments($userid);
-//        error_log('$correctenrolments: ' . print_r($correctenrolments, true));
         
         $remoteenrolments = $this->get_remote_course_enrolments($userid);
-//        error_log('$remoteenrolments: ' . print_r($remoteenrolments, true));
         
         $addenrolments = array_udiff($correctenrolments, $remoteenrolments, 'compare_by_hostusercourse');
         $removeenrolments = array_udiff($remoteenrolments, $correctenrolments, 'compare_by_hostusercourse');
-        
-//        error_log('$addenrolments: ' . print_r($addenrolments, true));
-//        error_log('$removeenrolments: ' . print_r($removeenrolments, true));
         
         $this->remote_enrol_enrolments($addenrolments);
         $this->remote_unenrol_enrolments($removeenrolments);

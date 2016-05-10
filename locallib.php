@@ -186,12 +186,40 @@ class enrol_metamnet_helper {
      * the host id, remote course id and user id of remote enrolments that should
      * exist.
      * 
+     * @param int|null $userid  User ID of the user to limit the results to.
+     *                          Leave empty for all users.
+     * 
      * @return stdClass[]|null array of mnetservice_enrol_enrolment *like* objects
      */
-    protected function get_correct_course_enrolments() {
+    protected function get_correct_course_enrolments($userid = null) {
         global $DB;
         
-        $sql = 'SELECT 
+        if (empty($userid)) {
+            // All users
+            $sql = 'SELECT 
+                        CONCAT(mec.hostid, "-", ue.userid, "-", mec.remoteid) AS id,
+                        mec.hostid,
+                        ue.userid,
+                        mec.remoteid AS remotecourseid
+                    FROM
+                        {enrol} e1
+                            JOIN
+                        {user_enrolments} ue ON e1.id = ue.enrolid
+                            JOIN
+                        {enrol} e2
+                            JOIN
+                        {mnetservice_enrol_courses} mec ON e2.customint1 = mec.id
+                    WHERE
+                        e1.courseid = e2.courseid
+                            AND e2.enrol = "metamnet"
+                            AND ue.status = 0
+                            AND e1.status = 0
+                            AND e2.status = 0
+                    GROUP BY id';
+            $params = array();
+        } else {
+            // Limited to the given user
+            $sql = 'SELECT 
                     CONCAT(mec.hostid, "-", ue.userid, "-", mec.remoteid) AS id,
                     mec.hostid,
                     ue.userid,
@@ -210,27 +238,48 @@ class enrol_metamnet_helper {
                         AND ue.status = 0
                         AND e1.status = 0
                         AND e2.status = 0
+                        AND ue.userid = :userid
                 GROUP BY id';
+                $params = array('userid'=>$userid);
+        }
         
-        return $DB->get_records_sql($sql);
+        return $DB->get_records_sql($sql, $params);
     }
     
     /**
      * Get all remote MNet course enrolments
      *
-     * @return stdClass[]|null all remote enrolments
+     * @param int|null $userid  User ID of the user to limit the results to.
+     *                          Leave empty for all users
+     * 
+     * @return stdClass[]|null  All remote enrolments
      */
-    protected function get_remote_course_enrolments() {
+    protected function get_remote_course_enrolments($userid = null) {
         global $DB;
         
-        $sql = "SELECT 
-                    id, hostid, remotecourseid
-                FROM
-                    {mnetservice_enrol_enrolments}
-                GROUP BY
-                    hostid, remotecourseid";
+        if (empty($userid)) {
+            // For all users
+            $sql = "SELECT 
+                        id, hostid, remotecourseid
+                    FROM
+                        {mnetservice_enrol_enrolments}
+                    GROUP BY
+                        hostid, remotecourseid";
+            $params = array();
+        } else {
+            // Only the given userid
+            $sql = "SELECT 
+                        id, hostid, remotecourseid
+                    FROM
+                        {mnetservice_enrol_enrolments}
+                    WHERE
+                        userid = :userid
+                    GROUP BY
+                        hostid, remotecourseid";
+            $params = array('userid'=>$userid);
+        }
 
-        $remotecourses = $DB->get_records_sql($sql);
+        $remotecourses = $DB->get_records_sql($sql, $params);
         
         foreach ($remotecourses as $course) {
             $this->check_cache($course->hostid, $course->remotecourseid);
@@ -392,22 +441,31 @@ class enrol_metamnet_helper {
     }
     
     /**
-     * Sync all meta mnet enrolment instances.
+     * Sync meta mnet enrolment instances either all instances or just those for
+     * the given user.
+     * 
+     * @param stdClass|null $user   User ID of the user to limit the results to.
+     *                              Leave empty for all users
      *
      * @return int 0 means ok, 1 means error, 2 means plugin disabled
      */
-    public function sync_instances() {
+    public function sync_instances($user = null) {
 
         if (!enrol_is_enabled('metamnet')) {
             // Ignore if the plugin is disabled.
             return 2;
         }
         
+        $userid = null;
+        if (is_object($user)) {
+            $userid = $user->id;
+        }
+        
         // Get all enrolment instances in courses with metamnet instances
-        $correctenrolments = $this->get_correct_course_enrolments();
+        $correctenrolments = $this->get_correct_course_enrolments($userid);
 //        error_log('$correctenrolments: ' . print_r($correctenrolments, true));
         
-        $remoteenrolments = $this->get_remote_course_enrolments();
+        $remoteenrolments = $this->get_remote_course_enrolments($userid);
 //        error_log('$remoteenrolments: ' . print_r($remoteenrolments, true));
         
         $addenrolments = array_udiff($correctenrolments, $remoteenrolments, 'compare_by_hostusercourse');

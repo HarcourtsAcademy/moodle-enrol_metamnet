@@ -81,44 +81,6 @@ class enrol_metamnet_plugin extends enrol_plugin {
     }
 
     /**
-     * Gets an array of the user enrolment actions
-     *
-     * @param course_enrolment_manager $manager
-     * @param stdClass $ue A user enrolment object
-     * @return array An array of user_enrolment_actions
-     */
-    /* todo: check if we need this function at all or the defaults will do. 
-    public function get_user_enrolment_actions(course_enrolment_manager $manager, $ue) {
-        $actions = array();
-        $context = $manager->get_context();
-        $instance = $ue->enrolmentinstance;
-        $params = $manager->get_moodlepage()->url->params();
-        $params['ue'] = $ue->id;
-        if ($this->allow_unenrol_user($instance, $ue) && has_capability('enrol/metamnet:unenrol', $context)) {
-            $url = new moodle_url('/enrol/unenroluser.php', $params);
-            $actions[] = new user_enrolment_action(new pix_icon('t/delete', ''), get_string('unenrol', 'enrol'), $url, array('class'=>'unenrollink', 'rel'=>$ue->id));
-        }
-        return $actions;
-    }
-     */
-
-    /**
-     * Called after updating/inserting course.
-     *
-     * @param bool $inserted true if course just inserted
-     * @param stdClass $course
-     * @param stdClass $data form data
-     * @return void
-     */
-    /* todo: Check if we need to lib.php course_updated function.
-    public function course_updated($inserted, $course, $data) {
-        // Meta sync updates are slow, if enrolments get out of sync teacher will have to wait till next cron.
-        // We should probably add some sync button to the course enrol methods overview page.
-    }
-     * 
-     */
-
-    /**
      * Update instance status
      *
      * @param stdClass $instance
@@ -133,23 +95,6 @@ class enrol_metamnet_plugin extends enrol_plugin {
         require_once("$CFG->dirroot/enrol/metamnet/locallib.php");
         /* todo: manual trigger sync of a single course here?
         enrol_meta_sync($instance->courseid);
-         * 
-         */
-    }
-
-    /**
-     * Called for all enabled enrol plugins that returned true from is_cron_required().
-     * @return void
-     */
-    public function cron() {
-        global $CFG;
-
-        require_once("$CFG->dirroot/enrol/metamnet/locallib.php");
-        
-        error_log('Running enrol_metamnet cron: ' . time());
-        
-        /* todo: manual trigger sync of ALL courses here?
-        enrol_meta_sync();
          * 
          */
     }
@@ -175,93 +120,6 @@ class enrol_metamnet_plugin extends enrol_plugin {
         $context = context_course::instance($instance->courseid);
         return has_capability('enrol/metamnet:config', $context);
     }
-
-    /**
-     * Restore instance and map settings.
-     *
-     * @param restore_enrolments_structure_step $step
-     * @param stdClass $data
-     * @param stdClass $course
-     * @param int $oldid
-     */
-    /* todo: do we need the lib.php restore_instance function?
-    public function restore_instance(restore_enrolments_structure_step $step, stdClass $data, $course, $oldid) {
-        global $DB, $CFG;
-
-        if (!$step->get_task()->is_samesite()) {
-            // No meta restore from other sites.
-            $step->set_mapping('enrol', $oldid, 0);
-            return;
-        }
-
-        if (!empty($data->customint2)) {
-            $data->customint2 = $step->get_mappingid('group', $data->customint2);
-        }
-
-        if ($DB->record_exists('course', array('id' => $data->customint1))) {
-            $instance = $DB->get_record('enrol', array('roleid' => $data->roleid, 'customint1' => $data->customint1,
-                'courseid' => $course->id, 'enrol' => $this->get_name()));
-            if ($instance) {
-                $instanceid = $instance->id;
-            } else {
-                $instanceid = $this->add_instance($course, (array)$data);
-            }
-            $step->set_mapping('enrol', $oldid, $instanceid);
-
-            require_once("$CFG->dirroot/enrol/meta/locallib.php");
-            enrol_meta_sync($data->customint1);
-
-        } else {
-            $step->set_mapping('enrol', $oldid, 0);
-        }
-    }
-     * 
-     */
-
-    /**
-     * Restore user enrolment.
-     *
-     * @param restore_enrolments_structure_step $step
-     * @param stdClass $data
-     * @param stdClass $instance
-     * @param int $userid
-     * @param int $oldinstancestatus
-     */
-    /* todo: do we need the lib.php restore_user_enrolment function?
-    public function restore_user_enrolment(restore_enrolments_structure_step $step, $data, $instance, $userid, $oldinstancestatus) {
-        global $DB;
-
-        if ($this->get_config('unenrolaction') != ENROL_EXT_REMOVED_SUSPENDNOROLES) {
-            // Enrolments were already synchronised in restore_instance(), we do not want any suspended leftovers.
-            return;
-        }
-
-        // ENROL_EXT_REMOVED_SUSPENDNOROLES means all previous enrolments are restored
-        // but without roles and suspended.
-
-        if (!$DB->record_exists('user_enrolments', array('enrolid' => $instance->id, 'userid' => $userid))) {
-            $this->enrol_user($instance, $userid, null, $data->timestart, $data->timeend, ENROL_USER_SUSPENDED);
-            if ($instance->customint2) {
-                groups_add_member($instance->customint2, $userid, 'enrol_meta', $instance->id);
-            }
-        }
-    }
-     * 
-     */
-
-    /**
-     * Restore user group membership.
-     * @param stdClass $instance
-     * @param int $groupid
-     * @param int $userid
-     */
-    /* todo: Do we need the lib.php restore_group_member function?
-    public function restore_group_member($instance, $groupid, $userid) {
-        // Nothing to do here, the group members are added in $this->restore_group_restored().
-        return;
-    }
-     * 
-     */
 
     /**
      * Returns edit icons for the page with list of instances.

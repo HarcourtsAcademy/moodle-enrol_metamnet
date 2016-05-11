@@ -27,17 +27,17 @@ require('../../config.php');
 require_once("$CFG->dirroot/enrol/metamnet/addinstance_form.php");
 require_once("$CFG->dirroot/enrol/metamnet/locallib.php");
 
-$courseid = required_param('courseid', PARAM_INT); // course id
+$courseid = required_param('courseid', PARAM_INT);
 $message = optional_param('message', null, PARAM_TEXT);
 $instanceid = optional_param('enrolid', 0, PARAM_INT);
 
-$course = $DB->get_record('course', array('id'=>$courseid), '*', MUST_EXIST);
+$course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
 $context = context_course::instance($course->id, MUST_EXIST);
 
-$PAGE->set_url('/enrol/metamnet/addinstance.php', array('courseid'=>$course->id));
+$PAGE->set_url('/enrol/metamnet/addinstance.php', array('courseid' => $course->id));
 $PAGE->set_pagelayout('admin');
 
-navigation_node::override_active_url(new moodle_url('/enrol/instances.php', array('id'=>$course->id)));
+navigation_node::override_active_url(new moodle_url('/enrol/instances.php', array('id' => $course->id)));
 
 require_login($course);
 require_capability('moodle/course:enrolconfig', $context);
@@ -57,11 +57,11 @@ if ($instanceid) {
 
 $mform = new enrol_metamnet_addinstance_form(null, array('course' => $course, 'instance' => $instance));
 
-// get existing meta mnet enrollments to prevent duplicates
+// Get existing meta mnet enrollments to prevent duplicates.
 $existing = $DB->get_fieldset_select('enrol', 'customint1', 'enrol = "metamnet" and courseid=' . $course->id);
 
 if ($mform->is_cancelled()) {
-    redirect(new moodle_url('/enrol/instances.php', array('id'=>$course->id)));
+    redirect(new moodle_url('/enrol/instances.php', array('id' => $course->id)));
 
 } else if ($data = $mform->get_data()) {
     if ($instance) {

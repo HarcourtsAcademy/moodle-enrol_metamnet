@@ -43,7 +43,7 @@ class enrol_metamnet_plugin extends enrol_plugin {
             return get_string('pluginname', 'enrol_'.$enrol);
         } else if (empty($instance->name)) {
             $enrol = $this->get_name();
-            $mnetcourse = $DB->get_record('mnetservice_enrol_courses', array('id'=>$instance->customint1));
+            $mnetcourse = $DB->get_record('mnetservice_enrol_courses', array('id' => $instance->customint1));
             if ($mnetcourse) {
                 $coursename = format_string($mnetcourse->fullname);
                 return get_string('pluginname', 'enrol_' . $enrol) . ' (' . $coursename . ')';
@@ -65,7 +65,7 @@ class enrol_metamnet_plugin extends enrol_plugin {
             return NULL;
         }
         // multiple instances supported - multiple remote courses linked
-        return new moodle_url('/enrol/metamnet/addinstance.php', array('courseid'=>$courseid));
+        return new moodle_url('/enrol/metamnet/addinstance.php', array('courseid' => $courseid));
     }
 
     /**

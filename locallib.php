@@ -484,41 +484,6 @@ class enrol_metamnet_helper {
         return 0;
     }
 
-    /**
-     * Sync a user in a course with a remote mnet course
-     *
-     * @param int $courseid of the local course
-     * @param int $userid of the local user
-     * @return null
-     */
-//    public function sync_user_in_course($courseid, $userid) {
-//        // Get all enrolment instances for the course
-//        $courseenrolmentinstances = $this->get_enrolment_instances($courseid);
-//        $metamnetenrolinstances = $this->filter_metamnet_enrolment_instances($courseenrolmentinstances);
-//        if (empty($metamnetenrolinstances)) {
-//            // Skip if there are no metamnet enrolment instances
-//            return;
-//        }
-//        
-//        $enrolmentinstanceids = $this->filter_enrolment_ids($courseenrolmentinstances);
-//        
-//        // Get active (non-metamnet) user enrolments for the user in the course
-//        $userenrolments = $this->get_user_enrolments($enrolmentinstanceids, $userid);
-//        
-//        if (empty($userenrolments)) {
-//            // unenrol the user from all metamnet enrolled courses
-//            foreach ($metamnetenrolinstances as $metamnetinstance) {
-//                $remotecourse = $this->get_remote_course($metamnetinstance->customint1);
-//                $this->remote_unenrol(array($userid), $remotecourse);
-//            }
-//        } else {
-//            // enrol the user in all metamnet enrolled courses
-//            foreach ($metamnetenrolinstances as $metamnetinstance) {
-//                $remotecourse = $this->get_remote_course($metamnetinstance->customint1);
-//                $this->remote_enrol(array($userid), $remotecourse);
-//            }
-//        }
-//    }
 }
 
 /**

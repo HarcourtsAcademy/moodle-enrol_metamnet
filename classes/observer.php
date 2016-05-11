@@ -103,5 +103,45 @@ class enrol_metamnet_observer {
 
         return true;
     }
+    
+    /**
+     * Triggered via enrol_instance_updated event.
+     *
+     * @param \core\event\enrol_instance_updated $event
+     * @return boolean
+     */
+    public static function enrol_instance_updated(\core\event\enrol_instance_updated $event) {
+        
+        if (!enrol_is_enabled('metamnet')) {
+            // Ignore if the plugin is disabled.
+            return true;
+        }
+        
+        // Sync everything until we have a method of syncing just one enrolment instance.
+        $enrolmetamnethelper = new enrol_metamnet_helper();
+        $enrolmetamnethelper->sync_instance($event->objectid);
+
+        return true;
+    }
+    
+    /**
+     * Triggered via enrol_instance_deleted event.
+     *
+     * @param \core\event\enrol_instance_deleted $event
+     * @return boolean
+     */
+    public static function enrol_instance_deleted(\core\event\enrol_instance_deleted $event) {
+        
+        if (!enrol_is_enabled('metamnet')) {
+            // Ignore if the plugin is disabled.
+            return true;
+        }
+        
+        // Sync everything becayse the enrolment instance has been deleted.
+        $enrolmetamnethelper = new enrol_metamnet_helper();
+        $enrolmetamnethelper->sync_instance($event->objectid);
+
+        return true;
+    }
 
 }

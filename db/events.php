@@ -44,4 +44,12 @@ $observers = array(
         'eventname'   => '\core\event\course_deleted',
         'callback'    => 'enrol_metamnet_observer::course_deleted',
     ),
+    array(
+        'eventname'   => '\core\event\enrol_instance_updated',
+        'callback'    => 'enrol_metamnet_observer::enrol_instance_updated',
+    ),
+    array(
+        'eventname'   => '\core\event\enrol_instance_deleted',
+        'callback'    => 'enrol_metamnet_observer::enrol_instance_deleted',
+    ),
 );

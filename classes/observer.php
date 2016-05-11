@@ -41,7 +41,6 @@ class enrol_metamnet_observer {
             return true;
         }
 
-
         $enrolmetamnethelper = new enrol_metamnet_helper();
         $enrolmetamnethelper->sync_instances($event->relateduserid);
 
@@ -104,7 +103,7 @@ class enrol_metamnet_observer {
 
         return true;
     }
-    
+
     /**
      * Triggered via enrol_instance_updated event.
      *
@@ -124,7 +123,7 @@ class enrol_metamnet_observer {
 
         return true;
     }
-    
+
     /**
      * Triggered via enrol_instance_deleted event.
      *

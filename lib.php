@@ -62,9 +62,9 @@ class enrol_metamnet_plugin extends enrol_plugin {
     public function get_newinstance_link($courseid) {
         $context = context_course::instance($courseid, MUST_EXIST);
         if (!has_capability('moodle/course:enrolconfig', $context) or !has_capability('enrol/metamnet:config', $context)) {
-            return NULL;
+            return null;
         }
-        // multiple instances supported - multiple remote courses linked
+        // Multiple instances supported - multiple remote courses linked.
         return new moodle_url('/enrol/metamnet/addinstance.php', array('courseid' => $courseid));
     }
 
@@ -74,7 +74,8 @@ class enrol_metamnet_plugin extends enrol_plugin {
      * @param stdClass $instance course enrol instance
      * @param stdClass $ue record from user_enrolments table
      *
-     * @return bool - true means user with 'enrol/xxx:unenrol' may unenrol this user, false means nobody may touch this user enrolment
+     * @return bool true means user with 'enrol/xxx:unenrol' may unenrol this user
+     *              false means nobody may touch this user enrolment
      */
     public function allow_unenrol_user(stdClass $instance, stdClass $ue) {
         return false;
@@ -126,7 +127,7 @@ class enrol_metamnet_plugin extends enrol_plugin {
 
         return $icons;
     }
-    
+
     /**
      * Forces synchronisation of user enrolments.
      *
@@ -141,15 +142,15 @@ class enrol_metamnet_plugin extends enrol_plugin {
         $helper = new enrol_metamnet_helper();
         $helper->sync_instances($user->id);
     }
-    
+
     /**
      * Forces synchronisation of all meta mnet enrolments.
-     * 
+     *
      * @return void
      */
     public function sync() {
         $helper = new enrol_metamnet_helper();
         $helper->sync_instances();
     }
-    
+
 }

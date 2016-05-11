@@ -29,13 +29,13 @@ function xmldb_enrol_metamnet_uninstall() {
     global $CFG, $DB;
 
     $mr = enrol_get_plugin('metamnet');
-    $rs = $DB->get_recordset('enrol', array('enrol'=>'metamnet'));
+    $rs = $DB->get_recordset('enrol', array('enrol' => 'metamnet'));
     foreach ($rs as $instance) {
         $mr->delete_instance($instance);
     }
     $rs->close();
 
-    role_unassign_all(array('component'=>'enrol_metamnet'));
+    role_unassign_all(array('component' => 'enrol_metamnet'));
 
     return true;
 }

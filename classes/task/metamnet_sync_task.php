@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die;
 
 /**
  * Task to sync meta mnet enrolments
- * 
+ *
  */
 class metamnet_sync_task extends \core\task\scheduled_task {
 

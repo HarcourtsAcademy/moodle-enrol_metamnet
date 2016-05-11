@@ -81,25 +81,6 @@ class enrol_metamnet_plugin extends enrol_plugin {
     }
 
     /**
-     * Update instance status
-     *
-     * @param stdClass $instance
-     * @param int $newstatus ENROL_INSTANCE_ENABLED, ENROL_INSTANCE_DISABLED
-     * @return void
-     */
-    public function update_status($instance, $newstatus) {
-        global $CFG;
-
-        parent::update_status($instance, $newstatus);
-
-        require_once("$CFG->dirroot/enrol/metamnet/locallib.php");
-        /* todo: manual trigger sync of a single course here?
-        enrol_meta_sync($instance->courseid);
-         * 
-         */
-    }
-
-    /**
      * Is it possible to delete enrol instance via standard UI?
      *
      * @param stdClass $instance

@@ -41,8 +41,9 @@ class enrol_metamnet_observer {
             return true;
         }
         
-        $enrolmetamnethandler = new enrol_metamnet_handler();
-        $enrolmetamnethandler->sync_course_instances($event->courseid, $event->relateduserid);
+        
+        $enrolmetamnethelper = new enrol_metamnet_helper();
+        $enrolmetamnethelper->sync_instances($event->relateduserid);
         
         return true;
     }
@@ -59,8 +60,8 @@ class enrol_metamnet_observer {
             return true;
         }
 
-        $enrolmetamnethandler = new enrol_metamnet_handler();
-        $enrolmetamnethandler->sync_course_instances($event->courseid, $event->relateduserid);
+        $enrolmetamnethelper = new enrol_metamnet_helper();
+        $enrolmetamnethelper->sync_instances($event->relateduserid);
 
         return true;
     }
@@ -77,8 +78,8 @@ class enrol_metamnet_observer {
             return true;
         }
         
-        $enrolmetamnethandler = new enrol_metamnet_handler();
-        $enrolmetamnethandler->sync_course_instances($event->courseid, $event->relateduserid);
+        $enrolmetamnethelper = new enrol_metamnet_helper();
+        $enrolmetamnethelper->sync_instances($event->relateduserid);
 
         return true;
     }

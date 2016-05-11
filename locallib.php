@@ -28,29 +28,6 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/mnet/service/enrol/locallib.php');
 
 /**
- * Event handler for Meta MNet enrolment plugin.
- *
- * We try to keep everything in sync via listening to events,
- * it may fail sometimes, so we always do a full sync in a
- * scheduled task too.
- */
-class enrol_metamnet_handler {
-
-    /**
-     * Synchronise Meta MNet enrolments of this user in this course
-     * 
-     * @param int $courseid
-     * @param int $userid
-     * @return void
-     */
-    public function sync_course_instances($courseid, $userid) {
-        
-        $helper = new enrol_metamnet_helper();
-        $helper->sync_user_in_course($courseid, $userid);
-    }
-}
-
-/**
  * Helper for Meta MNet enrolment plugin.
  *
  */
@@ -528,21 +505,16 @@ class enrol_metamnet_helper {
      * Sync meta mnet enrolment instances either all instances or just those for
      * the given user.
      * 
-     * @param stdClass|null $user   User ID of the user to limit the results to.
-     *                              Leave empty for all users
+     * @param int|null $user   User ID of the user to limit the results to.
+     *                         Leave empty for all users
      *
      * @return int 0 means ok, 1 means error, 2 means plugin disabled
      */
-    public function sync_instances($user = null) {
+    public function sync_instances($userid = null) {
 
         if (!enrol_is_enabled('metamnet')) {
             // Ignore if the plugin is disabled.
             return 2;
-        }
-        
-        $userid = null;
-        if (is_object($user)) {
-            $userid = $user->id;
         }
         
         // Get all enrolment instances in courses with metamnet instances

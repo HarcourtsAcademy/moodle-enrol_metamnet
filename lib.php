@@ -158,7 +158,7 @@ class enrol_metamnet_plugin extends enrol_plugin {
      */
     public function sync_user_enrolments($user) {
         $helper = new enrol_metamnet_helper();
-        $helper->sync_instances($user);
+        $helper->sync_instances($user->id);
     }
     
     /**

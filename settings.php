@@ -27,11 +27,11 @@ defined('MOODLE_INTERNAL') || die();
 
 if ($ADMIN->fulltree) {
 
-    //--- general settings -----------------------------------------------------------------------------------
+    // General settings.
     $settings->add(new admin_setting_heading('enrol_metamnet_settings', '', get_string('pluginname_desc', 'enrol_metamnet')));
 
 
-    //--- enrol instance defaults ----------------------------------------------------------------------------
+    // Enrol instance defaults.
     if (!during_initial_install()) {
         $options = get_default_enrol_roles(context_system::instance());
         $student = get_archetype_roles('student');
@@ -42,6 +42,10 @@ if ($ADMIN->fulltree) {
         $options = array(
             ENROL_EXT_REMOVED_UNENROL        => get_string('extremovedunenrol', 'enrol'),
             ENROL_EXT_REMOVED_SUSPENDNOROLES => get_string('extremovedsuspendnoroles', 'enrol'));
-        $settings->add(new admin_setting_configselect('enrol_cohort/unenrolaction', get_string('extremovedaction', 'enrol'), get_string('extremovedaction_help', 'enrol'), ENROL_EXT_REMOVED_UNENROL, $options));
+        $settings->add(new admin_setting_configselect('enrol_cohort/unenrolaction',
+                                                        get_string('extremovedaction', 'enrol'),
+                                                        get_string('extremovedaction_help', 'enrol'),
+                                                        ENROL_EXT_REMOVED_UNENROL,
+                                                        $options));
     }
 }

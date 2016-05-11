@@ -28,3 +28,4 @@ $string['pluginname_desc'] = 'Meta MNet Enrolment plugin synchronises enrolments
 
 $string['metamnetsync'] = 'Meta MNet Enrolment Sync';
 $string['inuse'] = '(In use)';
+$string['selectacourse'] = 'Please select a course.';

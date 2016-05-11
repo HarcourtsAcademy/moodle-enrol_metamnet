@@ -126,16 +126,21 @@ class enrol_metamnet_addinstance_form extends moodleform {
     }
 
     function validation($data, $files) {
+        global $DB;
         
         $errors = parent::validation($data, $files);
         
         if (!isset($data['customint1'])) {
-            $errors['errors'] = "Please select a course."; // todo: Convert to language string
+            $errors['errors'] = get_string('selectacourse', 'enrol_metamnet');
+        } else {
+            // Check if the remote course exists and display an error if it doesn't.
+            $remotecourse = $DB->get_record('mnetservice_enrol_courses', array('id' => $data['customint1']));
+
+            if (empty($remotecourse)) {
+                $errors['errors'] = get_string('selectacourse', 'enrol_metamnet');
+            }
         }
         
-        
-
-        // todo: write add instance validation.
 
         return $errors;
     }

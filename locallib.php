@@ -243,7 +243,7 @@ class enrol_metamnet_helper {
                         {mnetservice_enrol_enrolments}
                     GROUP BY
                         hostid, remotecourseid';
-            $params = array();
+            $params = null; // Used in two DB queries below.
 
         } else {
             // All instances, only the given userid.
@@ -255,7 +255,7 @@ class enrol_metamnet_helper {
                         userid = :userid
                     GROUP BY
                         hostid, remotecourseid';
-            $params = array('userid' => $userid);
+            $params = array('userid' => $userid); // Used in two DB queries below.
         }
 
         $remotecourses = $DB->get_records_sql($sql, $params);
@@ -264,7 +264,7 @@ class enrol_metamnet_helper {
             $this->check_cache($course->hostid, $course->remotecourseid);
         }
 
-        return $DB->get_records('mnetservice_enrol_enrolments', array('userid' => $userid));
+        return $DB->get_records('mnetservice_enrol_enrolments', $params);
 
     }
 
@@ -443,7 +443,7 @@ class enrol_metamnet_helper {
 
             $correctenrolments = $this->get_correct_course_enrolments($user->id);
             $remoteenrolments = $this->get_remote_course_enrolments($user->id);
-
+            
             $addenrolments = array_udiff($correctenrolments, $remoteenrolments, 'compare_by_hostusercourse');
             $removeenrolments = array_udiff($remoteenrolments, $correctenrolments, 'compare_by_hostusercourse');
 
@@ -464,7 +464,7 @@ class enrol_metamnet_helper {
      * @return int 0 means ok, 1 means error, 2 means plugin disabled
      */
     public function sync_instances($userid = null) {
-
+        
         if (!enrol_is_enabled('metamnet')) {
             // Ignore if the plugin is disabled.
             return 2;

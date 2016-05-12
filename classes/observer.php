@@ -137,9 +137,9 @@ class enrol_metamnet_observer {
             return true;
         }
 
-        // Sync everything becayse the enrolment instance has been deleted.
+        // Sync everything because the enrolment instance has been deleted.
         $enrolmetamnethelper = new enrol_metamnet_helper();
-        $enrolmetamnethelper->sync_instance($event->objectid);
+        $enrolmetamnethelper->sync_instances();
 
         return true;
     }

@@ -529,7 +529,7 @@ $html = '
                         
                         <td valign="top" class="mcnTextContent" style="padding-top: 9px;padding-right: 18px;padding-bottom: 9px;padding-left: 18px;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;color: #000000;font-family: Helvetica;font-size: 11px;line-height: 125%;text-align: left;">
                         
-                            <div style="text-align: center;"><em>' . $a['copyright'] . '</em><br>
+                            <div style="text-align: center;"><em>' . $a['copyright'] . '</em><br><br>
 <strong>Our mailing address is:</strong><br>
 ' . $a['mailingaddress'] . '</div>
 

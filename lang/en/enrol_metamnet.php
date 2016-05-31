@@ -62,9 +62,6 @@ sales consultants, managers, business owners and more.
 
 (c) Copyright Harcourts International
 
-This email was sent to you because you received a bonus
-Academy Real Estate Training online course.
-
 Our mailing address is:
 31 Amy Johnson Place
 Eagle Farm, QLD 4009

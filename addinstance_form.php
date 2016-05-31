@@ -60,6 +60,11 @@ class enrol_metamnet_addinstance_form extends moodleform {
             $mform->addElement('html', $OUTPUT->box(get_string('mnetdisabled', 'mnet'), 'noticebox'));
             return;
         }
+        
+        $mform->addElement('checkbox', 'customint2', get_string('setting_notifications', 'enrol_metamnet'),
+                get_string('setting_email', 'enrol_metamnet'), array('checked' => true));
+        $mform->setDefault('customint2', $instance->customint2);
+        $mform->setType('customint2', PARAM_INT);
 
         $roamingusers = get_users_by_capability(context_system::instance(), 'moodle/site:mnetlogintoremote', 'u.id');
         if (empty($roamingusers)) {
@@ -105,7 +110,7 @@ class enrol_metamnet_addinstance_form extends moodleform {
                 if ((!$instance && in_array($course->id, $existing)) ||
                         ($instance && in_array($course->id, $existing) && $course->id != $instance->customint1)) {
                     $mform->addElement('radio', 'disabled' . $course->id, s($course->fullname)
-                            . ' (' . s($course->rolename) . ')', get_string('inuse', 'enrol_metamnet'), $course->id);
+                            . ' (' . s($course->rolename) . ')', get_string('setting_inuse', 'enrol_metamnet'), $course->id);
                     $mform->freeze('disabled' . $course->id);
                 } else {
                     $mform->addElement('radio', 'customint1', s($course->fullname)
@@ -114,6 +119,7 @@ class enrol_metamnet_addinstance_form extends moodleform {
             }
 
         }
+        $mform->setType('customint1', PARAM_INT);
 
         $mform->addElement('html', '<a href="'
                 . new moodle_url($PAGE->url, array('usecache' => 0, 'sesskey' => sesskey())) . '" class="btn">'
@@ -153,13 +159,13 @@ class enrol_metamnet_addinstance_form extends moodleform {
         $errors = parent::validation($data, $files);
 
         if (!isset($data['customint1'])) {
-            $errors['errors'] = get_string('selectacourse', 'enrol_metamnet');
+            $errors['errors'] = get_string('setting_course', 'enrol_metamnet');
         } else {
             // Check if the remote course exists and display an error if it doesn't.
             $remotecourse = $DB->get_record('mnetservice_enrol_courses', array('id' => $data['customint1']));
 
             if (empty($remotecourse)) {
-                $errors['errors'] = get_string('selectacourse', 'enrol_metamnet');
+                $errors['errors'] = get_string('setting_course', 'enrol_metamnet');
             }
         }
 

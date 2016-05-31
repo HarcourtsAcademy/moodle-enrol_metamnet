@@ -25,10 +25,12 @@
 
 $string['pluginname'] = 'Meta MNet Enrolment';
 $string['pluginname_desc'] = 'Meta MNet Enrolment plugin synchronises enrolments across Moodle MNet hosts.';
-
 $string['metamnetsync'] = 'Meta MNet Enrolment Sync';
-$string['inuse'] = '(In use)';
-$string['selectacourse'] = 'Please select a course.';
+
+$string['setting_notifications']  = 'Notify users when remote enrolled';
+$string['setting_email']          = 'By email';
+$string['setting_inuse']          = '(In use)';
+$string['setting_course']         = 'Please select a course.';
 
 // Email contents
 

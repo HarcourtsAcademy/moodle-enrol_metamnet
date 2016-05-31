@@ -64,14 +64,22 @@ if ($mform->is_cancelled()) {
     redirect(new moodle_url('/enrol/instances.php', array('id' => $course->id)));
 
 } else if ($data = $mform->get_data()) {
+    
+    if (empty($data->customint2)) {
+        $data->customint2 = 0; // Moodle checkboxes are empty when unchecked.
+    }
+    
     if ($instance) {
-        if ($data->customint1 != $instance->customint1) {
-            $DB->update_record('enrol', array('id' => $instance->id, 'customint1' => $data->customint1));
+        if ($data->customint1 != $instance->customint1 || $data->customint2 != $instance->customint2) {
+            $DB->update_record('enrol', array('id' => $instance->id,
+                                              'customint1' => $data->customint1,
+                                              'customint2' => $data->customint2));
             $helper = new enrol_metamnet_helper();
             $helper->sync_instance($instance->id);
         }
     } else if (!in_array($data->customint1, $existing)) {
-        $enrolid = $enrol->add_instance($course, array('customint1' => $data->customint1));
+        $enrolid = $enrol->add_instance($course, array('customint1' => $data->customint1,
+                                                       'customint2' => $data->customint2));
         if ($enrolid) {
             $helper = new enrol_metamnet_helper();
             $helper->sync_instance($enrolid);

@@ -177,7 +177,8 @@ class enrol_metamnet_helper {
                         CONCAT(mec.hostid, "-", ue.userid, "-", mec.remoteid) AS id,
                         mec.hostid,
                         ue.userid,
-                        mec.remoteid AS remotecourseid
+                        mec.remoteid AS remotecourseid,
+                        e2.customint2 AS emailnotify
                     FROM
                         {enrol} e1
                             JOIN
@@ -204,7 +205,8 @@ class enrol_metamnet_helper {
                     CONCAT(mec.hostid, "-", ue.userid, "-", mec.remoteid) AS id,
                     mec.hostid,
                     ue.userid,
-                    mec.remoteid AS remotecourseid
+                    mec.remoteid AS remotecourseid,
+                    e2.customint2 AS emailnotify
                 FROM
                     {enrol} e1
                         JOIN
@@ -352,8 +354,8 @@ class enrol_metamnet_helper {
     /**
      * Enrols multiple local students in remote courses
      *
-     * @param array $enrolments containing mnetservice_enrol_enrolments *like* objections
-     * @return bool true if successful
+     * @param array $enrolments containing mnetservice_enrol_enrolments *like* objects
+     * @return bool true if successful, false otherwise
      */
     protected function remote_enrol_enrolments(array $enrolments) {
         global $DB;
@@ -373,11 +375,14 @@ class enrol_metamnet_helper {
             
             if ($result !== true) {
                 trigger_error($this->mnetservice->format_error_message($result), E_USER_WARNING);
+                continue;
             }
             
             // Email the user a link to the remote course
-            $remotehost = $DB->get_record('mnet_host', array('id' => $enrolment->hostid), '*', MUST_EXIST);
-            $enrolmentemail->send_email($user, $remotehost, $remotecourse);
+            if (!empty($enrolment->emailnotify) && $enrolment->emailnotify) {
+                $remotehost = $DB->get_record('mnet_host', array('id' => $enrolment->hostid), '*', MUST_EXIST);
+                $enrolmentemail->send_email($user, $remotehost, $remotecourse);
+            }
         }
 
         return true;
@@ -497,7 +502,7 @@ class enrol_metamnet_helper {
 
         $addenrolments = array_udiff($correctenrolments, $remoteenrolments, 'compare_by_hostusercourse');
         $removeenrolments = array_udiff($remoteenrolments, $correctenrolments, 'compare_by_hostusercourse');
-
+        
         $this->remote_enrol_enrolments($addenrolments);
         $this->remote_unenrol_enrolments($removeenrolments);
 

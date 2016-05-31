@@ -172,7 +172,7 @@ class enrol_metamnet_helper {
         global $DB;
 
         if (empty($userid)) {
-            // All instances and all users.
+            // All instances and all users (excluding non-Harcourts users).
             $sql = 'SELECT
                         CONCAT(mec.hostid, "-", ue.userid, "-", mec.remoteid) AS id,
                         mec.hostid,
@@ -186,17 +186,20 @@ class enrol_metamnet_helper {
                         {enrol} e2
                             JOIN
                         {mnetservice_enrol_courses} mec ON e2.customint1 = mec.id
+                            JOIN
+                        {user} u ON u.id = ue.userid
                     WHERE
                         e1.courseid = e2.courseid
                             AND e2.enrol = "metamnet"
                             AND ue.status = 0
                             AND e1.status = 0
                             AND e2.status = 0
+                            AND SUBSTRING(u.username, 1, 3) != "ac_"
                     GROUP BY id';
             $params = array();
 
         } else {
-            // Limited to the given user.
+            // Limited to the given user (excluding non-Harcourts users).
             $sql = 'SELECT
                     CONCAT(mec.hostid, "-", ue.userid, "-", mec.remoteid) AS id,
                     mec.hostid,
@@ -210,6 +213,8 @@ class enrol_metamnet_helper {
                     {enrol} e2
                         JOIN
                     {mnetservice_enrol_courses} mec ON e2.customint1 = mec.id
+                        JOIN
+                    {user} u ON u.id = ue.userid
                 WHERE
                     e1.courseid = e2.courseid
                         AND e2.enrol = "metamnet"
@@ -217,6 +222,7 @@ class enrol_metamnet_helper {
                         AND e1.status = 0
                         AND e2.status = 0
                         AND ue.userid = :userid
+                        AND SUBSTRING(u.username, 1, 3) != "ac_"
                 GROUP BY id';
                 $params = array('userid' => $userid);
         }

@@ -490,8 +490,6 @@ class enrol_metamnet_helper {
             return 2;
         }
         
-        error_log('sync_instances: ' . print_r($userid, true));
-
         // Get all enrolment instances in courses with metamnet instances.
         $correctenrolments = $this->get_correct_course_enrolments($userid);
 

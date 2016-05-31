@@ -149,8 +149,6 @@ class enrolmentemail {
     public function send_email($touser, $remotehost, $remotecourse) {
         global $CFG;
         
-        error_log('send_email to: ' . print_r($touser->id, true));
-        
         if (empty($touser)) {
             error_log('$touser parameter is required. ' . print_r(debug_backtrace(), TRUE), 1, $CFG->supportemail);
             return false;
@@ -181,8 +179,6 @@ class enrolmentemail {
         
         $mailresult = email_to_user($touser, $fromuser, $email->subject, $email->text, $email->html);
         
-        error_log('$mailresult: ' . print_r($mailresult, true));
-
         if (!$mailresult){
             error_log("Error: "
                     . "Could not send out email for remote course {$remotecourse->id} "

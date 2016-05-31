@@ -328,13 +328,20 @@ class enrol_metamnet_helper {
         global $DB;
 
         if (is_array($userids)) {
+            $enrolmentemail = new enrol_metamnet\email\enrolmentemail();
+
             foreach ($userids as $userid) {
                 $user = $DB->get_record('user', array('id' => $userid), '*', MUST_EXIST);
                 $result = $this->mnetservice->req_enrol_user($user, $remotecourse);
                 if ($result !== true) {
                     trigger_error($this->mnetservice->format_error_message($result), E_USER_WARNING);
+                    
                 } else {
+                    // Email the user a link to the remote course
+                    $remotehost = $DB->get_record('mnet_host', array('id' => $enrolment->hostid), '*', MUST_EXIST);
+                    $enrolmentemail->send_email($user, $remotehost, $remotecourse);
                     return $result;
+                    
                 }
             }
         } else {
@@ -354,6 +361,8 @@ class enrol_metamnet_helper {
         if (empty($enrolments)) {
             return false;
         }
+        
+        $enrolmentemail = new enrol_metamnet\email\enrolmentemail();
 
         foreach ($enrolments as $enrolment) {
             $user = $DB->get_record('user', array('id' => $enrolment->userid), '*', MUST_EXIST);
@@ -361,9 +370,14 @@ class enrol_metamnet_helper {
                                             'hostid' => $enrolment->hostid,
                                             'remoteid' => $enrolment->remotecourseid), '*', MUST_EXIST);
             $result = $this->mnetservice->req_enrol_user($user, $remotecourse);
+            
             if ($result !== true) {
                 trigger_error($this->mnetservice->format_error_message($result), E_USER_WARNING);
             }
+            
+            // Email the user a link to the remote course
+            $remotehost = $DB->get_record('mnet_host', array('id' => $enrolment->hostid), '*', MUST_EXIST);
+            $enrolmentemail->send_email($user, $remotehost, $remotecourse);
         }
 
         return true;
@@ -475,6 +489,8 @@ class enrol_metamnet_helper {
             // Ignore if the plugin is disabled.
             return 2;
         }
+        
+        error_log('sync_instances: ' . print_r($userid, true));
 
         // Get all enrolment instances in courses with metamnet instances.
         $correctenrolments = $this->get_correct_course_enrolments($userid);

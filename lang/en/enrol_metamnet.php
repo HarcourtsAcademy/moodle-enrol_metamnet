@@ -32,21 +32,22 @@ $string['selectacourse'] = 'Please select a course.';
 
 // Email contents
 
-$string['email_subject']        = 'Start your Academy Real Estate Training courses now';
-$string['email_heading']        = 'Thanks for registering.';
-$string['email_subheading']     = 'Your online training is ready to start.';
+$string['email_subject']        = 'Bonus Academy Real Estate Training online course';
+$string['email_heading']        = 'Congratulations!';
+$string['email_subheading']     = 'You have received a bonus Academy Real Estate Training online course.';
 $string['email_aboutus']        = 'We provide real estate training in class and online for all roles including office administrators, property managers, sales consultants, managers, business owners and more.';
 $string['email_findus']         = '<a href="http://www.harcourtsacademy.com/">Find us online</a>';
-$string['email_footer']                    = 'This email was sent to you because you where enrolled in another Academy Real Estate Training online course.';
+$string['email_footer']         = 'This email was sent to you because you received a bonus Academy Real Estate Training online course.';
 $string['email_addressheader']  = 'Our mailing address is:';
 $string['email_address']        = '31 Amy Johnson Place Eagle Farm, QLD 4009 Australia';
+$string['email_copyright']      = '© Copyright Harcourts International';
 
 $string['email_rawtext']        = '
 Hi {$a->firstname}
 
-Thanks for registering.
+Congratulations! You have received a bonus
+Academy Real Estate Training online course.
 
-Your online training is ready to start.
 {$a->textcourselinks}
 
 -------------------------------------------------------------------
@@ -61,7 +62,7 @@ sales consultants, managers, business owners and more.
 
 (c) Copyright Harcourts International
 
-This email was sent to you because you were enrolled in another 
+This email was sent to you because you received a bonus
 Academy Real Estate Training online course.
 
 Our mailing address is:

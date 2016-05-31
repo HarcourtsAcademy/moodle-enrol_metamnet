@@ -420,7 +420,7 @@ $html = '
                         
                         <td valign="top" class="mcnTextContent" style="padding-top: 9px;padding-left: 18px;padding-bottom: 9px;padding-right: 0;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;color: #ffffff;font-family: Helvetica;font-size: 11px;line-height: 125%;text-align: left;">
                         
-                            <div style="padding-top: 5%; line-height: 20.8px; text-align: left;">' . $a['subheading'] . '</div>
+                            <div style="padding-top: 5%; line-height: 20.8px; text-align: left;">' . $a['subject'] . '</div>
 
                         </td>
                     </tr>

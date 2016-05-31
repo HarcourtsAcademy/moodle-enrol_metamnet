@@ -40,7 +40,7 @@ class enrolmentemail {
 
         return array (  // Headers to make emails easier to track
             'Return-Path: <>',
-            'List-Id: "Snipcart Order Complete" <enrol_snipcart@'.$hostname.'>',
+            'List-Id: "Bonus Academy Real Estate Training Course" <bonus_course@'.$hostname.'>',
             'List-Help: '.$CFG->wwwroot,
             'Message-ID: <'.hash('sha256',time()).'@'.$hostname.'>',
             );
@@ -49,45 +49,34 @@ class enrolmentemail {
     /**
      * Creates the course links for the text email.
      *
+     * @param stdClass $remotehost A single mnet_host object
+     * @param stdClass $remotecourse A single mnetservice_enrol_courses object
+     * 
      * @return string the course links
      */
     public function create_text_course_links($remotehost, $remotecourse) {
         $courseurl = $remotehost->wwwroot . '/course/view.php?id=' . $remotecourse->remoteid;
+        $coursename = $remotecourse->fullname;
+        $coursesummary = html_to_text($remotecourse->summary);
 
-        return "\r\n{$remotecourse->fullname} ($courseurl)\r\n";
+        return "$coursename\r\n($courseurl)\r\n\r\n$coursesummary";
     }
     
     /**
      * Creates the course list for the html email.
      *
+     * @param stdClass $remotehost A single mnet_host object
+     * @param stdClass $remotecourse A single mnetservice_enrol_courses object
+     * 
      * @return string the course links
      */
-    public function create_html_course_list() {
-        global $CFG;
+    public function create_html_course_list($remotehost, $remotecourse) {
         
-        $courselist = '';
-        
-        foreach ($this->snipcartorder->courses as $course) {
-            require_once($CFG->libdir. '/coursecatlib.php');
-            $course = new \course_in_list($course);
+        $courseurl = $remotehost->wwwroot . '/course/view.php?id=' . $remotecourse->remoteid;
+        $coursename = $remotecourse->fullname;
+        $coursesummary = $remotecourse->summary;
             
-            $courseurl = new \moodle_url('/course/view.php', array('id'=>$course->id));
-            
-            // get the first course image
-            $courseoverviewfiles = $course->get_course_overviewfiles();
-            $firstfile = array_shift($courseoverviewfiles);
-            
-            $isimage = (!empty($firstfile) and $firstfile->is_valid_image());
-            
-            if ($isimage) {
-                $courseimageurl = file_encode_url("$CFG->wwwroot/pluginfile.php",
-                        '/'. $firstfile->get_contextid(). '/'. $firstfile->get_component(). '/'.
-                        $firstfile->get_filearea(). $firstfile->get_filepath(). $firstfile->get_filename(), true);
-            } else {
-                $courseimageurl = new \moodle_url('/enrol/snipcart/pix/empty-course-icon.png');
-            }
-            
-            $courselist .= '<!-- BEGIN COURSE // -->
+        return '<!-- BEGIN COURSE // -->
 <table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnCaptionBlock" style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;background-color: #FFFFFF;">
     <tbody class="mcnCaptionBlockOuter">
         <tr>
@@ -96,16 +85,12 @@ class enrolmentemail {
 
 <table align="left" border="0" cellpadding="0" cellspacing="0" class="mcnCaptionBottomContent" width="false" style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;">
     <tbody><tr>
-        <td class="mcnCaptionBottomImageContent" align="center" valign="top" style="padding: 0 9px 9px 9px;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;">
-
-            <a href="' . $courseurl . '" target="_blank" style="word-wrap: break-word;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;color: #6DC6DD;font-weight: normal;text-decoration: underline;"><img width="48" height="48" src="' . $courseimageurl . '" style="width: 48px;height: 48px;margin: 0px;border: 0;outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;vertical-align: bottom;"></a>
-
-
+        <td class="mcnTextContent" valign="top" style="padding: 0 9px 0 9px;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;color: #606060;font-family: Helvetica;font-size: 15px;line-height: 150%;text-align: left;" width="564">
+            <a href="' . $courseurl . '" target="_blank" style="word-wrap: break-word;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;color: #6DC6DD;font-weight: normal;text-decoration: underline;"><strong>' .$coursename . '</strong></a>
         </td>
-    </tr>
-    <tr>
-        <td class="mcnTextContent" valign="top" style="padding: 0 9px 0 9px;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;color: #606060;font-family: Helvetica;font-size: 15px;line-height: 150%;text-align: center;" width="564">
-            <a href="' . $courseurl . '" target="_blank" style="word-wrap: break-word;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;color: #6DC6DD;font-weight: normal;text-decoration: underline;"><strong>' .$course->fullname . '</strong></a>
+    </tr><tr>
+        <td class="mcnTextContent" valign="top" style="padding: 0 9px 0 9px;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;color: #606060;font-family: Helvetica;font-size: 15px;line-height: 150%;text-align: left;" width="564">
+            ' . $coursesummary . '
         </td>
     </tr>
 </tbody></table>
@@ -114,9 +99,7 @@ class enrolmentemail {
     </tbody>
 </table>                
                                     <!-- // END COURSE -->';
-        }
-        
-        return $courselist;
+
     }
     
     /**
@@ -134,8 +117,8 @@ class enrolmentemail {
             'heading'=>get_string('email_heading', 'enrol_metamnet'),
             'subheading'=>get_string('email_subheading', 'enrol_metamnet'),
             'textcourselinks'=>$this->create_text_course_links($remotehost, $remotecourse),
-            'htmlcourselist'=>$this->create_html_course_list(),
-            'copyright'=>get_string('copyright', 'enrol_metamnet'),
+            'htmlcourselist'=>$this->create_html_course_list($remotehost, $remotecourse),
+            'copyright'=>get_string('email_copyright', 'enrol_metamnet'),
             'mailingaddress'=>get_string('email_address', 'enrol_metamnet'),
         );
         return $a;

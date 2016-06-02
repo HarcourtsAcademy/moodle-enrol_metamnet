@@ -34,7 +34,10 @@ $instanceid = optional_param('enrolid', 0, PARAM_INT);
 $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
 $context = context_course::instance($course->id, MUST_EXIST);
 
-$PAGE->set_url('/enrol/metamnet/addinstance.php', array('courseid' => $course->id));
+$PAGE->set_url('/enrol/metamnet/addinstance.php', 
+                array('courseid' => $course->id,
+                      'enrolid' => $instanceid,
+                      'message' => $message));
 $PAGE->set_pagelayout('admin');
 
 navigation_node::override_active_url(new moodle_url('/enrol/instances.php', array('id' => $course->id)));

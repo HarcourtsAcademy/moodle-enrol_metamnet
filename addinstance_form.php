@@ -63,7 +63,9 @@ class enrol_metamnet_addinstance_form extends moodleform {
         
         $mform->addElement('checkbox', 'customint2', get_string('setting_notifications', 'enrol_metamnet'),
                 get_string('setting_email', 'enrol_metamnet'), array('checked' => true));
-        $mform->setDefault('customint2', $instance->customint2);
+        if (!empty($instance->customint2) && is_bool($instance->customint2)) {
+            $mform->setDefault('customint2', $instance->customint2);
+        }
         $mform->setType('customint2', PARAM_INT);
         
         $mform->addElement('date_selector', 'customint3', get_string('startdate', 'enrol_metamnet'));

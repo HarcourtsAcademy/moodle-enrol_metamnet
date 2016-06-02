@@ -60,14 +60,14 @@ class enrol_metamnet_addinstance_form extends moodleform {
             $mform->addElement('html', $OUTPUT->box(get_string('mnetdisabled', 'mnet'), 'noticebox'));
             return;
         }
-        
+
         $mform->addElement('checkbox', 'customint2', get_string('setting_notifications', 'enrol_metamnet'),
                 get_string('setting_email', 'enrol_metamnet'), array('checked' => true));
         if (!empty($instance->customint2) && is_bool($instance->customint2)) {
             $mform->setDefault('customint2', $instance->customint2);
         }
         $mform->setType('customint2', PARAM_INT);
-        
+
         $mform->addElement('date_selector', 'customint3', get_string('startdate', 'enrol_metamnet'));
         if (!empty($instance->customint3) && is_int($instance->customint3)) {
             $mform->setDefault('customint3', $instance->customint3);
@@ -166,7 +166,7 @@ class enrol_metamnet_addinstance_form extends moodleform {
         global $DB;
 
         $errors = parent::validation($data, $files);
-        
+
         if (!isset($data['customint1'])) {
             $errors['errors'] = get_string('setting_course', 'enrol_metamnet');
         } else {

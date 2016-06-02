@@ -339,13 +339,13 @@ class enrol_metamnet_helper {
                 $result = $this->mnetservice->req_enrol_user($user, $remotecourse);
                 if ($result !== true) {
                     trigger_error($this->mnetservice->format_error_message($result), E_USER_WARNING);
-                    
+
                 } else {
-                    // Email the user a link to the remote course
+                    // Email the user a link to the remote course.
                     $remotehost = $DB->get_record('mnet_host', array('id' => $enrolment->hostid), '*', MUST_EXIST);
                     $enrolmentemail->send_email($user, $remotehost, $remotecourse);
                     return $result;
-                    
+
                 }
             }
         } else {
@@ -365,7 +365,7 @@ class enrol_metamnet_helper {
         if (empty($enrolments)) {
             return false;
         }
-        
+
         $enrolmentemail = new enrol_metamnet\email\enrolmentemail();
 
         foreach ($enrolments as $enrolment) {
@@ -374,13 +374,13 @@ class enrol_metamnet_helper {
                                             'hostid' => $enrolment->hostid,
                                             'remoteid' => $enrolment->remotecourseid), '*', MUST_EXIST);
             $result = $this->mnetservice->req_enrol_user($user, $remotecourse);
-            
+
             if ($result !== true) {
                 trigger_error($this->mnetservice->format_error_message($result), E_USER_WARNING);
                 continue;
             }
-            
-            // Email the user a link to the remote course
+
+            // Email the user a link to the remote course.
             if (!empty($enrolment->emailnotify) && $enrolment->emailnotify) {
                 $remotehost = $DB->get_record('mnet_host', array('id' => $enrolment->hostid), '*', MUST_EXIST);
                 $enrolmentemail->send_email($user, $remotehost, $remotecourse);
@@ -470,7 +470,7 @@ class enrol_metamnet_helper {
 
             $correctenrolments = $this->get_correct_course_enrolments($user->id);
             $remoteenrolments = $this->get_remote_course_enrolments($user->id);
-            
+
             $addenrolments = array_udiff($correctenrolments, $remoteenrolments, 'compare_by_hostusercourse');
             $removeenrolments = array_udiff($remoteenrolments, $correctenrolments, 'compare_by_hostusercourse');
 
@@ -491,12 +491,12 @@ class enrol_metamnet_helper {
      * @return int 0 means ok, 1 means error, 2 means plugin disabled
      */
     public function sync_instances($userid = null) {
-        
+
         if (!enrol_is_enabled('metamnet')) {
             // Ignore if the plugin is disabled.
             return 2;
         }
-        
+
         // Get all enrolment instances in courses with metamnet instances.
         $correctenrolments = $this->get_correct_course_enrolments($userid);
 
@@ -504,7 +504,7 @@ class enrol_metamnet_helper {
 
         $addenrolments = array_udiff($correctenrolments, $remoteenrolments, 'compare_by_hostusercourse');
         $removeenrolments = array_udiff($remoteenrolments, $correctenrolments, 'compare_by_hostusercourse');
-        
+
         $this->remote_enrol_enrolments($addenrolments);
         $this->remote_unenrol_enrolments($removeenrolments);
 

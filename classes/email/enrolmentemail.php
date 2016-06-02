@@ -1,4 +1,18 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Email to notify students they have been enrolled remote Moodle courses
@@ -11,12 +25,12 @@
 
 namespace enrol_metamnet\email;
 
-require_once($CFG->libdir . '/weblib.php'); // curl
+require_once($CFG->libdir . '/weblib.php'); // Curl.
 
 defined('MOODLE_INTERNAL') || die();
 
 class enrolmentemail {
-    
+
     /**
      * Constructs the enrolment email.
      *
@@ -25,7 +39,7 @@ class enrolmentemail {
     public function __construct() {
 
     }
-    
+
     /**
      * Creates the email headers.
      *
@@ -34,24 +48,24 @@ class enrolmentemail {
     public function get_email_headers() {
         global $CFG;
 
-        // Create the email headers
+        // Create the email headers.
         $urlinfo    = parse_url($CFG->wwwroot);
         $hostname   = $urlinfo['host'];
 
-        return array (  // Headers to make emails easier to track
+        return array (  // Headers to make emails easier to track.
             'Return-Path: <>',
             'List-Id: "Bonus Academy Real Estate Training Course" <bonus_course@'.$hostname.'>',
             'List-Help: '.$CFG->wwwroot,
-            'Message-ID: <'.hash('sha256',time()).'@'.$hostname.'>',
+            'Message-ID: <'.hash('sha256', time()).'@'.$hostname.'>',
             );
     }
-    
+
     /**
      * Creates the course links for the text email.
      *
      * @param stdClass $remotehost A single mnet_host object
      * @param stdClass $remotecourse A single mnetservice_enrol_courses object
-     * 
+     *
      * @return string the course links
      */
     public function create_text_course_links($remotehost, $remotecourse) {
@@ -61,21 +75,21 @@ class enrolmentemail {
 
         return "$coursename\r\n($courseurl)\r\n\r\n$coursesummary";
     }
-    
+
     /**
      * Creates the course list for the html email.
      *
      * @param stdClass $remotehost A single mnet_host object
      * @param stdClass $remotecourse A single mnetservice_enrol_courses object
-     * 
+     *
      * @return string the course links
      */
     public function create_html_course_list($remotehost, $remotecourse) {
-        
+
         $courseurl = $remotehost->wwwroot . '/course/view.php?id=' . $remotecourse->remoteid;
         $coursename = $remotecourse->fullname;
         $coursesummary = $remotecourse->summary;
-            
+
         return '<!-- BEGIN COURSE // -->
 <table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnCaptionBlock" style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;background-color: #FFFFFF;">
     <tbody class="mcnCaptionBlockOuter">
@@ -97,97 +111,94 @@ class enrolmentemail {
             </td>
         </tr>
     </tbody>
-</table>                
+</table>
                                     <!-- // END COURSE -->';
 
     }
-    
+
     /**
      * Creates the content that appears in the text and html emails
      *
      * @param stdclass $touser The email recipient
-     * 
+     *
      * @return string[] array containing the email variables
      */
     public function create_email_variables($touser, $remotehost, $remotecourse) {
         $a = array(
-            'subject'=>get_string('email_subject', 'enrol_metamnet'),
-            'logourl'=> new \moodle_url('/enrol/metamnet/pix/logo.png'),
-            'firstname'=>$touser->firstname,
-            'heading'=>get_string('email_heading', 'enrol_metamnet'),
-            'subheading'=>get_string('email_subheading', 'enrol_metamnet'),
-            'textcourselinks'=>$this->create_text_course_links($remotehost, $remotecourse),
-            'htmlcourselist'=>$this->create_html_course_list($remotehost, $remotecourse),
-            'copyright'=>get_string('email_copyright', 'enrol_metamnet'),
-            'mailingaddress'=>get_string('email_address', 'enrol_metamnet'),
+            'subject' => get_string('email_subject', 'enrol_metamnet'),
+            'logourl' => new \moodle_url('/enrol/metamnet/pix/logo.png'),
+            'firstname' => $touser->firstname,
+            'heading' => get_string('email_heading', 'enrol_metamnet'),
+            'subheading' => get_string('email_subheading', 'enrol_metamnet'),
+            'textcourselinks' => $this->create_text_course_links($remotehost, $remotecourse),
+            'htmlcourselist' => $this->create_html_course_list($remotehost, $remotecourse),
+            'copyright' => get_string('email_copyright', 'enrol_metamnet'),
+            'mailingaddress' => get_string('email_address', 'enrol_metamnet'),
         );
         return $a;
     }
-    
+
     /**
      * Creates the html email
-     * 
+     *
      * @param string[] $a array containing email variables
      *
      * @return string containing the html email
      */
     public function create_html_email($a) {
         $html = '';
-        include 'enrolmentemail_html.php';
+        include('enrolmentemail_html.php');
         return $html;
     }
-    
+
     /**
      * Sends the course enrolment notification email to the student
      *
      * @param stdclass $touser The email recipient
      * @param stdClass $remotehost A single mnet_host object
      * @param stdClass $remotecourse A single mnetservice_enrol_courses object
-     * 
+     *
      * @return bool true if successful, false otherwise
      */
     public function send_email($touser, $remotehost, $remotecourse) {
         global $CFG;
-        
+
         if (empty($touser)) {
-            error_log('$touser parameter is required. ' . print_r(debug_backtrace(), TRUE), 1, $CFG->supportemail);
             return false;
         }
-        
+
         if (empty($remotecourse)) {
-            error_log('$remotecourse parameter is required.' . print_r(debug_backtrace(), TRUE), 1, $CFG->supportemail);
             return false;
         }
-        
-        // Create the email to send
+
+        // Create the email to send.
         $email = new \stdClass();
 
         $email->customheaders   = $this->get_email_headers();
         $email->subject         = get_string('email_subject', 'enrol_metamnet');
-        
+
         $a                      = $this->create_email_variables($touser, $remotehost,  $remotecourse);
         $email->text            = get_string('email_rawtext', 'enrol_metamnet', $a);
         $email->html            = $this->create_html_email($a);
 
-        // Send it from the support email address
+        // Send it from the support email address.
         $fromuser = new \stdClass();
         $fromuser->id = -1;
         $fromuser->email = $CFG->supportemail;
         $fromuser->mailformat = 1;
         $fromuser->maildisplay = 1;
         $fromuser->customheaders = $email->customheaders;
-        
+
         $mailresult = email_to_user($touser, $fromuser, $email->subject, $email->text, $email->html);
-        
-        if (!$mailresult){
-            error_log("Error: "
+
+        if (!$mailresult) {
+            debugging("Error: "
                     . "Could not send out email for remote course {$remotecourse->id} "
-                    . "to the student ({$touser->email}). Error: $mailresult .. not trying again.");
+                    . "to the student ({$touser->email}). Error: $mailresult .. not trying again.", DEBUG_ALL);
             return false;
         }
 
         return true;
     }
-    
-    
+
 }

@@ -1,4 +1,18 @@
-<?php 
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 $html = '
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
@@ -528,7 +542,7 @@ $html = '
                     <tbody><tr>
                         
                         <td valign="top" class="mcnTextContent" style="padding-top: 9px;padding-right: 18px;padding-bottom: 9px;padding-left: 18px;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;color: #000000;font-family: Helvetica;font-size: 11px;line-height: 125%;text-align: left;">
-                        
+
                             <div style="text-align: center;"><em>' . $a['copyright'] . '</em><br><br>
 <strong>Our mailing address is:</strong><br>
 ' . $a['mailingaddress'] . '</div>
@@ -536,7 +550,7 @@ $html = '
                         </td>
                     </tr>
                 </tbody></table>
-                
+
             </td>
         </tr>
     </tbody>
@@ -552,5 +566,5 @@ $html = '
                 </tr>
             </tbody></table>
         </center>
-    
+
 </body></html>';

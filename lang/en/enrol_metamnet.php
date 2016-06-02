@@ -33,8 +33,7 @@ $string['setting_inuse']          = '(In use)';
 $string['setting_notifications']  = 'Notify users when remote enrolled';
 $string['startdate']              = 'Synchronise enrolments starting';
 
-// Email contents
-
+// Email contents.
 $string['email_subject']        = 'Bonus Academy Real Estate Training online course';
 $string['email_heading']        = 'Congratulations!';
 $string['email_subheading']     = 'You have received a bonus Academy Real Estate Training online course.';

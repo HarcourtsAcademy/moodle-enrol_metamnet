@@ -196,6 +196,7 @@ class enrol_metamnet_helper {
                             AND e1.status = 0
                             AND e2.status = 0
                             AND SUBSTRING(u.username, 1, 3) != "ac_"
+                            AND e2.customint3 < ue.timecreated
                     GROUP BY id';
             $params = array();
 
@@ -225,6 +226,7 @@ class enrol_metamnet_helper {
                         AND e2.status = 0
                         AND ue.userid = :userid
                         AND SUBSTRING(u.username, 1, 3) != "ac_"
+                        AND e2.customint3 < ue.timecreated
                 GROUP BY id';
                 $params = array('userid' => $userid);
         }

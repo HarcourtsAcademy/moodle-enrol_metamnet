@@ -65,6 +65,13 @@ class enrol_metamnet_addinstance_form extends moodleform {
                 get_string('setting_email', 'enrol_metamnet'), array('checked' => true));
         $mform->setDefault('customint2', $instance->customint2);
         $mform->setType('customint2', PARAM_INT);
+        
+        $mform->addElement('date_selector', 'customint3', get_string('startdate', 'enrol_metamnet'));
+        if (!empty($instance->customint3) && is_int($instance->customint3)) {
+            $mform->setDefault('customint3', $instance->customint3);
+        } else {
+            $mform->setDefault('customint3', time() + 3600 * 24);
+        }
 
         $roamingusers = get_users_by_capability(context_system::instance(), 'moodle/site:mnetlogintoremote', 'u.id');
         if (empty($roamingusers)) {
@@ -157,7 +164,7 @@ class enrol_metamnet_addinstance_form extends moodleform {
         global $DB;
 
         $errors = parent::validation($data, $files);
-
+        
         if (!isset($data['customint1'])) {
             $errors['errors'] = get_string('setting_course', 'enrol_metamnet');
         } else {

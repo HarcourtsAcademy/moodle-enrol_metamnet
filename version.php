@@ -24,8 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2016053102;                // The current plugin version (Date: YYYYMMDDXX).
+$plugin->version   = 2016060201;                // The current plugin version (Date: YYYYMMDDXX).
 $plugin->component = 'enrol_metamnet';          // Full name of the plugin (used for diagnostics).
-$plugin->release   = '1.0 (Build: 2016053102)';
+$plugin->release   = '1.0 (Build: 2016060201)';
 $plugin->requires  = 2014051200;                // Requires Moodle 2.7+.
 $plugin->maturity  = MATURITY_STABLE;

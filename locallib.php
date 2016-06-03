@@ -475,7 +475,8 @@ class enrol_metamnet_helper {
             $removeenrolments = array_udiff($remoteenrolments, $correctenrolments, 'compare_by_hostusercourse');
 
             $this->remote_enrol_enrolments($addenrolments);
-            $this->remote_unenrol_enrolments($removeenrolments);
+            // todo: check this won't unenrol users enrolled via the MNet Remote Enrolments Client.
+            // $this->remote_unenrol_enrolments($removeenrolments);
         }
 
         return 0;
@@ -506,7 +507,9 @@ class enrol_metamnet_helper {
         $removeenrolments = array_udiff($remoteenrolments, $correctenrolments, 'compare_by_hostusercourse');
 
         $this->remote_enrol_enrolments($addenrolments);
-        $this->remote_unenrol_enrolments($removeenrolments);
+       
+        // todo: check this won't unenrol users enrolled via the MNet Remote Enrolments Client.
+        // $this->remote_unenrol_enrolments($removeenrolments);
 
         return 0;
     }

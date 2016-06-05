@@ -385,13 +385,20 @@ class enrol_metamnet_helper {
             
             // Log the completed remote course enrollment.
             $context = context_course::instance($enrolment->courseid, IGNORE_MISSING);
+            
+            $mnetenrolment = $DB->get_record('mnetservice_enrol_enrolments', 
+                                             array('hostid' => $enrolment->hostid,
+                                                   'remotecourseid' => $enrolment->remotecourseid,
+                                                   'userid' => $user->id), '*', MUST_EXIST);
 
             $event = \enrol_metamnet\event\metamnet_enrolled::create(array(
                 'context' => $context,
                 'userid' => $user->id,
                 'courseid' => $enrolment->courseid,
-                'objectid' => $enrolment->remotecourseid,
-                'other' => $enrolment->hostid,
+                'objectid' => $mnetenrolment->id,
+                'other' => array(
+                    'hostid' => $enrolment->hostid,
+                    'remotecourseid' => $enrolment->remotecourseid),
             ));
             $event->trigger();
 

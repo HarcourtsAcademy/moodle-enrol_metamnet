@@ -45,8 +45,8 @@ class metamnet_enrolled extends \core\event\base {
 
     public function get_description() {
         return "The user with id {$this->userid} "
-        . "was enrolled in the course {$this->objectid} "
-        . "on the host {$this->other} "
+        . "was enrolled in the course {$this->other['remotecourseid']} "
+        . "on the host {$this->other['hostid']} "
         . "when they were enrolled in the course {$this->courseid}.";
     }
     
@@ -54,10 +54,10 @@ class metamnet_enrolled extends \core\event\base {
         global $DB;
         
         $remotecourse = $DB->get_record('mnetservice_enrol_courses',
-                array('hostid' => $this->other, 'remoteid' => $this->objectid));
+                array('hostid' => $this->other['hostid'], 'remoteid' => $this->other['remotecourseid']));
         
         return new \moodle_url('/mnet/service/enrol/course.php',
-                array('host' => $this->other,
+                array('host' => $this->other['hostid'],
                       'course' => $remotecourse->id,
                       'usecache' => 0,
                       'sesskey' => sesskey()));

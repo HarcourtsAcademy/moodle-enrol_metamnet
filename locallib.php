@@ -26,6 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/mnet/service/enrol/locallib.php');
+require_once("classes/event/metamnet_enrolled.php");
 
 /**
  * Helper for Meta MNet enrolment plugin.
@@ -178,7 +179,8 @@ class enrol_metamnet_helper {
                         mec.hostid,
                         ue.userid,
                         mec.remoteid AS remotecourseid,
-                        e2.customint2 AS emailnotify
+                        e2.customint2 AS emailnotify,
+                        e2.courseid AS courseid
                     FROM
                         {enrol} e1
                             JOIN
@@ -207,7 +209,8 @@ class enrol_metamnet_helper {
                     mec.hostid,
                     ue.userid,
                     mec.remoteid AS remotecourseid,
-                    e2.customint2 AS emailnotify
+                    e2.customint2 AS emailnotify,
+                    e2.courseid AS courseid
                 FROM
                     {enrol} e1
                         JOIN
@@ -288,7 +291,7 @@ class enrol_metamnet_helper {
         global $DB;
         return $DB->get_record('mnetservice_enrol_courses', array('id' => $mnetcourseid), '*');
     }
-
+    
     /**
      * Get all user enrolments for a course with the given enrolment instance
      *
@@ -379,6 +382,18 @@ class enrol_metamnet_helper {
                 trigger_error($this->mnetservice->format_error_message($result), E_USER_WARNING);
                 continue;
             }
+            
+            // Log the completed remote course enrollment.
+            $context = context_course::instance($enrolment->courseid, IGNORE_MISSING);
+
+            $event = \enrol_metamnet\event\metamnet_enrolled::create(array(
+                'context' => $context,
+                'userid' => $user->id,
+                'courseid' => $enrolment->courseid,
+                'objectid' => $enrolment->remotecourseid,
+                'other' => $enrolment->hostid,
+            ));
+            $event->trigger();
 
             // Email the user a link to the remote course.
             if (!empty($enrolment->emailnotify) && $enrolment->emailnotify) {
@@ -472,7 +487,7 @@ class enrol_metamnet_helper {
             $remoteenrolments = $this->get_remote_course_enrolments($user->id);
 
             $addenrolments = array_udiff($correctenrolments, $remoteenrolments, 'compare_by_hostusercourse');
-            $removeenrolments = array_udiff($remoteenrolments, $correctenrolments, 'compare_by_hostusercourse');
+            // $removeenrolments = array_udiff($remoteenrolments, $correctenrolments, 'compare_by_hostusercourse');
 
             $this->remote_enrol_enrolments($addenrolments);
             // todo: check this won't unenrol users enrolled via the MNet Remote Enrolments Client.
@@ -504,7 +519,7 @@ class enrol_metamnet_helper {
         $remoteenrolments = $this->get_remote_course_enrolments($userid);
 
         $addenrolments = array_udiff($correctenrolments, $remoteenrolments, 'compare_by_hostusercourse');
-        $removeenrolments = array_udiff($remoteenrolments, $correctenrolments, 'compare_by_hostusercourse');
+        // $removeenrolments = array_udiff($remoteenrolments, $correctenrolments, 'compare_by_hostusercourse');
 
         $this->remote_enrol_enrolments($addenrolments);
        

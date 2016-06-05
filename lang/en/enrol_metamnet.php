@@ -33,6 +33,9 @@ $string['setting_inuse']          = '(In use)';
 $string['setting_notifications']  = 'Notify users when remote enrolled';
 $string['startdate']              = 'Synchronise enrolments starting';
 
+// Events.
+$string['metamnetenrolled'] = 'Metamnet enrollment completed';
+
 // Email contents.
 $string['email_subject']        = 'Bonus Academy Real Estate Training online course';
 $string['email_heading']        = 'Congratulations!';

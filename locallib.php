@@ -325,38 +325,6 @@ class enrol_metamnet_helper {
     }
 
     /**
-     * Enrol the user(s) in the remote MNet course
-     *
-     * @param int[] $userids
-     * @param stdClass $remotecourse (mnetservice_enrol_courses)
-     * @return bool true if successful
-     */
-    protected function remote_enrol($userids, $remotecourse) {
-        global $DB;
-
-        if (is_array($userids)) {
-            $enrolmentemail = new enrol_metamnet\email\enrolmentemail();
-
-            foreach ($userids as $userid) {
-                $user = $DB->get_record('user', array('id' => $userid), '*', MUST_EXIST);
-                $result = $this->mnetservice->req_enrol_user($user, $remotecourse);
-                if ($result !== true) {
-                    trigger_error($this->mnetservice->format_error_message($result), E_USER_WARNING);
-
-                } else {
-                    // Email the user a link to the remote course.
-                    $remotehost = $DB->get_record('mnet_host', array('id' => $enrolment->hostid), '*', MUST_EXIST);
-                    $enrolmentemail->send_email($user, $remotehost, $remotecourse);
-                    return $result;
-
-                }
-            }
-        } else {
-            return false;
-        }
-    }
-
-    /**
      * Enrols multiple local students in remote courses
      *
      * @param array $enrolments containing mnetservice_enrol_enrolments *like* objects

@@ -381,32 +381,6 @@ class enrol_metamnet_helper {
     }
 
     /**
-     * Unenrol the user(s) in the remote MNet course
-     *
-     * @param int[] $userids
-     * @param stdClass $remotecourse (mnetservice_enrol_courses)
-     * @return bool true if successful
-     */
-    protected function remote_unenrol($userids, $remotecourse) {
-        global $DB;
-
-        if (is_array($userids)) {
-            foreach ($userids as $userid) {
-                $user = $DB->get_record('user', array('id' => $userid), '*', MUST_EXIST);
-                $result = $this->mnetservice->req_unenrol_user($user, $remotecourse);
-                if ($result !== true) {
-                    trigger_error($this->mnetservice->format_error_message($result), E_USER_WARNING);
-                } else {
-                    return $result;
-                }
-            }
-        } else {
-            return false;
-        }
-
-    }
-
-    /**
      * Unenrols multiple local students from remote courses
      *
      * @param array $enrolments containing mnetservice_enrol_enrolments *like* objections

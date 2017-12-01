@@ -108,7 +108,7 @@ class enrol_metamnet_addinstance_form extends moodleform {
                         $OUTPUT->box(get_string('availablecoursesonnone', 'mnetservice_enrol', $a), 'noticebox'));
             }
 
-            $icon = html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('i/course'), 'alt' => get_string('category')));
+            $icon = html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('i/course'), 'alt' => get_string('category')));
             $prevcat = null;
             foreach ($courses as $course) {
                 $course = (object)$course;

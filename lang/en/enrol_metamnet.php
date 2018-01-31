@@ -36,6 +36,8 @@ $string['startdate']              = 'Synchronise enrolments starting';
 // Events.
 $string['metamnetenrolled'] = 'Metamnet enrollment completed';
 
+$string['metamnet:config'] = 'Configure metamnet enrol instances';
+
 // Email contents.
 $string['email_subject']        = 'Bonus Academy Real Estate Training online course';
 $string['email_heading']        = 'Congratulations!';
